@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Export Pulse | Shipment Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" onerror="var x=document.createElement('script');x.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';document.head.appendChild(x)"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<style>
+:root{--navy:#5B0015;--blue:#80AEE8;--blue2:#E7F0FC;--ink:#34343A;--muted:#718096;--line:#E6DDCE;--bg:#F7F2E0;--white:#fff;--teal:#477FAE;--amber:#D6B7A0;--red:#5B0015;--purple:#A8BFE7;--aqua:#EAF3FC;--business-blue:#B8D5F3;--light-green:#EEF5E9;--shadow:0 8px 26px rgba(91,0,21,.07)}
+/* Ivory + Bordeaux interface theme; data visualization series colors are intentionally preserved. */
+body{background:#F7F2E0}
+.sidebar{background:#5B0015}
+.nav-btn.active,.nav-btn:hover{background:#7A2033}
+.nav-label{color:#D8AEB7}
+.side-note{border-top-color:#8C5360}
+.date-chip,.tag{color:#5B0015}
+.avatar{background:#F7F2E0;color:#5B0015}
+.btn.primary{background:#80AEE8;border-color:#80AEE8;color:#17324D}
+.kpi-icon{background:#E7F0FC;color:#5C91CE}
+.field:focus{border-color:#80AEE8;box-shadow:0 0 0 3px #E7F0FC}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:"IBM Plex Sans Thai",Inter,sans-serif;color:var(--ink);font-size:14px}button,input,select{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}.sidebar{width:238px;background:#5B0015;color:#d8e4f5;padding:25px 16px;display:flex;flex-direction:column;flex-shrink:0}.brand{display:flex;gap:11px;align-items:center;padding:0 10px 30px}.brand-mark{width:39px;height:39px;border-radius:12px;background:#80AEE8;display:grid;place-items:center;color:#fff;font-size:21px;font-weight:700}.brand h1{font-size:16px;line-height:1.2;color:#fff;margin:0}.brand small{font-size:10px;letter-spacing:1.4px;color:#F7F2E0}.nav-label{font-size:10px;letter-spacing:1.5px;color:#8299b7;padding:14px 12px 8px}.nav-btn{display:flex;align-items:center;gap:12px;padding:12px;border:0;border-radius:9px;background:transparent;color:#F0E5E7;text-align:left;width:100%;margin:2px 0;transition:.15s}.nav-btn .ico{width:20px;text-align:center;font-size:16px}.nav-btn.active,.nav-btn:hover{background:#7A2033;color:#fff}.side-note{margin-top:auto;border-top:1px solid #8C5360;padding:18px 10px 0;font-size:11px;color:#9db2cf;line-height:1.7}.main{min-width:0;flex:1;padding:26px 30px 40px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.eyebrow{font-size:11px;color:var(--blue);font-weight:700;letter-spacing:1.3px;text-transform:uppercase}.topbar h2{font-size:25px;margin:4px 0 3px;letter-spacing:-.5px}.sub{color:var(--muted);font-size:12px}.top-actions{display:flex;align-items:center;gap:10px}.date-chip,.tag{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 12px;font-size:12px;color:#244A70}.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#F7F2E0;color:#323C45;font-weight:700}.page{display:none}.page.active{display:block}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:25px 0 13px}.section-head h3{font-size:15px;margin:0}.section-head p{margin:3px 0 0;color:var(--muted);font-size:11px}.btn{border:1px solid var(--line);border-radius:9px;padding:9px 13px;background:#fff;color:var(--ink);font-size:12px;font-weight:600}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn:hover{filter:brightness(.98);transform:translateY(-1px)}.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.kpi{background:#fff;border:1px solid var(--line);border-radius:13px;padding:17px 18px;box-shadow:var(--shadow)}.kpi-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}.kpi-icon{width:32px;height:32px;border-radius:9px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:17px}.kpi-value{font-size:27px;font-weight:700;letter-spacing:-.8px;margin:13px 0 2px}.kpi-foot{font-size:11px;color:var(--muted)}.kpi-foot strong{color:var(--teal);font-weight:600}.grid-main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:15px;margin-top:16px}.grid-main.monthly-main{grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);align-items:stretch}.panel{background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px;box-shadow:var(--shadow);min-width:0}.panel-title{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:16px}.panel-title h3{margin:0;font-size:14px}.panel-title p{margin:4px 0 0;color:var(--muted);font-size:11px}.chart-wrap{height:245px;position:relative}.donut-wrap{height:210px;position:relative;display:flex;align-items:center;justify-content:center}.donut-fallback{width:180px;height:180px;max-width:100%;border-radius:50%;position:relative;display:block;flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(20,30,50,.04)}.donut-fallback:after{content:"";position:absolute;inset:29%;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(20,30,50,.03)}.legend-list{display:grid;gap:10px;margin-top:8px}.legend-item{display:flex;align-items:center;justify-content:space-between;font-size:12px}.legend-label{display:flex;align-items:center;gap:8px;color:#52647a}.dot{width:8px;height:8px;border-radius:3px;display:inline-block}.table-panel{margin-top:16px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;color:#777987;font-size:10px;letter-spacing:.35px;font-weight:600;padding:11px 12px;border-bottom:1px solid var(--line);background:#FBF8EF}td{padding:12px;border-bottom:1px solid #F1EDE4;font-size:12px;color:#34343A}tbody tr:hover{background:#FBF8EF}tbody tr:last-child td{border-bottom:0}.customer-cell{display:flex;align-items:center;gap:9px}.mini-avatar{width:30px;height:30px;border-radius:8px;background:#E8F0FB;color:#80AEE8;display:grid;place-items:center;font-weight:700;font-size:11px;flex-shrink:0}.customer-name{font-weight:600;color:#244A70}.customer-sub{font-size:10px;color:#777987;margin-top:2px}.status{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:20px;font-size:10px;font-weight:600}.status.blue{background:#E8F0FB;color:#80AEE8}.status.green{background:#E3F2EB;color:#34745D}.status.amber{background:#fff3d8;color:#94620d}.status.gray{background:#F7F2E0;color:#65758a}.status.red{background:#F5E5E8;color:#5B0015}.filters{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}.field{height:38px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:0 11px;color:#34343A;min-width:145px;outline:none}.field:focus{border-color:#80AEE8;box-shadow:0 0 0 3px #E8F0FB}.search{flex:1;min-width:200px}.forecast-banner{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:1px solid #f0dfb5;background:#fffaf0;border-radius:11px;margin:14px 0;color:#765319}.forecast-banner strong{display:block;font-size:12px;margin-bottom:3px}.forecast-banner p{margin:0;font-size:11px;line-height:1.6}.stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:14px 0}.mini-stat{padding:15px;background:#fff;border:1px solid var(--line);border-radius:11px}.mini-stat small{color:var(--muted);font-size:11px}.mini-stat strong{display:block;font-size:22px;margin-top:6px}.customer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.customer-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;cursor:pointer;transition:.15s}.customer-card:hover{border-color:#80AEE8;transform:translateY(-2px);box-shadow:var(--shadow)}.customer-card-top{display:flex;gap:10px;align-items:center}.customer-card h4{font-size:12px;margin:0}.customer-card p{font-size:10px;color:var(--muted);margin:4px 0}.card-metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.card-metrics span{font-size:10px;color:var(--muted)}.card-metrics strong{display:block;font-size:14px;color:#5B0015;margin-top:2px}.empty{padding:30px;text-align:center;color:var(--muted)}.small-note{font-size:10px;color:var(--muted);line-height:1.7;margin-top:12px}.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(13,31,55,.42);z-index:10;align-items:center;justify-content:center;padding:18px}.modal-backdrop.show{display:flex}.modal{background:#fff;border-radius:15px;padding:22px;width:min(760px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 80px #10274433}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.modal-head h3{margin:0}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-field label{display:block;font-size:11px;color:#777987;margin-bottom:5px}.form-field input,.form-field select{width:100%;height:38px;border:1px solid var(--line);border-radius:8px;padding:0 10px;min-width:0}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.detail-overlay{position:fixed;inset:0;background:#0d1f3755;z-index:11;display:none;justify-content:flex-end}.detail-overlay.show{display:flex}.detail-panel{background:#fff;width:min(460px,100%);height:100%;overflow:auto;padding:24px}.upload-dropzone{border:2px dashed #A8BFE7;background:#FBF8EF;border-radius:12px;padding:18px 16px;text-align:center;margin:0 0 14px;cursor:pointer;transition:.15s}.upload-dropzone.dragover{background:#E8F0FB;border-color:var(--blue)}.upload-dropzone strong{display:block;color:var(--navy);font-size:13px}.upload-dropzone span{display:block;color:var(--muted);font-size:11px;margin-top:4px}.ocr-progress{display:none;margin:10px 0;padding:10px 12px;border-radius:8px;background:#FBF8EF;color:#5B0015;font-size:12px}.pdf-viewer{display:none;position:fixed;inset:0;background:rgba(10,22,38,.78);z-index:30;align-items:center;justify-content:center;padding:12px}.pdf-viewer.show{display:flex}.pdf-viewer-card{width:min(1100px,100%);height:min(94vh,900px);background:#fff;border-radius:12px;display:flex;flex-direction:column;overflow:hidden}.pdf-viewer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}.pdf-viewer-head strong{font-size:13px;overflow-wrap:anywhere}.pdf-viewer-actions{display:flex;gap:7px;flex-wrap:wrap}.pdf-viewer iframe{width:100%;height:100%;border:0;background:#F7F2E0}.detail-close{float:right;border:0;background:#eef2f8;border-radius:8px;padding:7px 10px}.detail-panel h3{margin-top:30px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.detail-item{padding:11px;background:#FBF8EF;border-radius:8px}.detail-item small{display:block;color:var(--muted);font-size:10px}.detail-item strong{font-size:12px;display:block;margin-top:4px;white-space:normal;overflow-wrap:anywhere}.footnote{font-size:10px;color:#777987;margin-top:25px;border-top:1px solid var(--line);padding-top:14px}.mobile-menu{display:none}
+@media(max-width:1050px){.sidebar{width:205px}.main{padding:22px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-main{grid-template-columns:1fr}.customer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.app{display:block}.sidebar{width:100%;padding:12px;display:block}.brand{padding:0 6px 12px}.nav-label,.side-note{display:none}.nav-list{display:flex;overflow:auto;gap:4px}.nav-btn{width:auto;white-space:nowrap;padding:9px 11px}.main{padding:18px 13px}.topbar{align-items:flex-start}.topbar h2{font-size:21px}.top-actions .date-chip{display:none}.kpis{gap:9px}.kpi{padding:13px}.kpi-value{font-size:23px}.customer-grid,.stats-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.section-head{align-items:flex-start}.chart-wrap{height:220px}}
+
+/* Modern Business palette: muted purple, revenue green, aqua and clean white */
+.nav-btn.active,.nav-btn:hover{background:#7A2033;color:#fff}
+.btn.primary{background:#7172A9;border-color:#7172A9;color:#fff}
+.kpi-icon{background:#E8F0FB;color:#80AEE8}
+.kpi:nth-child(1) .kpi-icon{background:#edf5e4;color:#66883b}
+.kpi:nth-child(2) .kpi-icon{background:#E8F0FB;color:#80AEE8}
+.kpi:nth-child(3) .kpi-icon{background:#f3edf8;color:#A48AC1}
+.kpi:nth-child(4) .kpi-icon{background:#eaf5f5;color:#407DCC}
+.status.blue{background:#E8F0FB;color:#80AEE8}
+.status.green{background:#E3F2EB;color:#34745D}
+.upload-dropzone{border-color:#80AEE8;background:#faf9fc}
+.upload-dropzone.dragover{background:#f0eff8;border-color:#7172A9}
+.field:focus,.form-field input:focus,.form-field select:focus{border-color:#80AEE8;box-shadow:0 0 0 3px #f0eff8;outline:none}
+
+.owner-picker{position:relative}.owner-picker-trigger{min-width:190px;display:flex;align-items:center;justify-content:space-between;gap:20px;background:#fff;color:#5B0015;border:1px solid #e6ddce}.owner-picker-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:50;min-width:190px;padding:5px;background:#fff;border:1px solid #e6ddce;border-radius:9px;box-shadow:0 8px 22px rgba(30,40,55,.16)}.owner-picker-menu[hidden]{display:none}.owner-picker-menu button{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-radius:6px;background:#fff;color:#34343A;font:inherit;cursor:pointer}.owner-picker-menu button:hover{background:#f7f2e0;color:#5B0015}.owner-btn.active{background:#5B0015;border-color:#5B0015;color:#fff}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}.calendar-weekday{text-align:center;padding:9px 3px;color:#718096;font-size:11px;font-weight:700}.calendar-day{min-height:92px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px;text-align:left;color:var(--ink);min-width:0}.calendar-day.muted{opacity:.35}.calendar-day.selected{border:2px solid #80AEE8;background:#F4F8FE}.calendar-day .day-number{font-weight:700;font-size:12px}.calendar-day .day-count{display:block;margin-top:8px;font-size:10px;color:#477FAE}.calendar-day .owner-dots{display:flex;gap:3px;margin-top:5px}.calendar-day .owner-dot{width:7px;height:7px;border-radius:50%;display:inline-block}.calendar-day .calendar-event-dots{display:flex;gap:4px;margin-top:9px;min-height:9px}.calendar-day .calendar-event-dots .owner-dot{width:8px;height:8px;background:#F15B40!important;border:0;box-shadow:none}.calendar-day.has-work .day-count{margin-top:5px}.calendar-day.has-work{background:#F8FBFF}.calendar-day:hover{border-color:#80AEE8}.calendar-empty{min-height:92px}.owner-tag{display:inline-block;padding:3px 7px;border-radius:20px;background:#E8F0FB;color:#376FA5;font-size:10px;font-weight:600}
+@media(max-width:720px){.calendar-grid{gap:3px}.calendar-day{min-height:72px;padding:5px}.calendar-day .day-count{font-size:9px}.owner-toolbar{align-items:flex-start!important}}
+
+
+/* Reference-style operations dashboard */
+.reference-dashboard{display:grid;grid-template-columns:124px minmax(0,1fr);gap:14px;align-items:stretch}
+.dash-left-stack{display:flex;flex-direction:column;gap:9px;min-width:0}
+.dash-card{background:#fff;border:1px solid #e7e9ed;border-radius:5px;min-width:0}
+.user-overview{min-height:182px;padding:12px 9px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.dash-card-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:#111827;min-height:22px}
+.user-overview .dash-card-heading{justify-content:flex-start;width:100%;font-size:11px}
+.dash-person-icon{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#f05b43;color:#f05b43;font-size:0;position:relative}
+.dash-person-icon:after{content:"";position:absolute;top:3px;width:6px;height:6px;border-radius:50%;background:#fff}
+.dash-person-icon:before{content:"";position:absolute;bottom:2px;width:11px;height:6px;border-radius:8px 8px 5px 5px;background:#fff}
+.dash-user-name{font-size:10px;margin-top:auto;color:#1f2937;overflow-wrap:anywhere}
+.dash-user-sub{font-size:10px;color:#5b6470;margin-top:3px}
+.dash-user-note{font-size:9px;color:#87909b;font-style:italic;margin-top:6px}
+.dash-kpi-card{border-radius:5px;min-height:76px;padding:10px;display:flex;align-items:center;gap:10px;color:#fff}
+.shipments-kpi{background:#205783}.loaded-kpi{background:#66aa9d}
+.dash-kpi-icon{width:25px;height:25px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:17px;flex-shrink:0}
+.dash-kpi-card strong{display:block;font-size:18px;line-height:1.1}
+.dash-kpi-card span{display:block;font-size:8px;letter-spacing:.3px;margin-top:4px}
+.dash-main-area{min-width:0;display:flex;flex-direction:column;gap:9px}
+.dash-top-panels{display:grid;grid-template-columns:minmax(260px,1.8fr) minmax(145px,1fr) minmax(145px,1fr);gap:12px}
+.performance-card{padding:9px 13px 6px;min-height:182px}
+.performance-card .dash-card-heading{align-items:flex-start}
+.dash-select{border:0;background:transparent;color:#475569;font-size:10px;padding:3px 5px;outline:none;max-width:100px}
+.dash-chart-wrap{height:108px;margin-top:8px;position:relative}
+.dash-month-labels{display:grid;grid-template-columns:repeat(12,1fr);font-size:9px;color:#111827;text-align:center;margin-top:3px}
+.summary-card{min-height:182px;padding:9px 11px;display:flex;flex-direction:column}
+.dash-add-btn{border:0;background:#347c70;color:#fff;width:25px;height:23px;font-size:19px;line-height:1;border-radius:0 0 0 3px}
+.dash-add-btn.red{background:#c52d45}
+.dash-summary-number{font-size:14px;font-weight:700;text-align:center;margin-top:auto;color:#222}
+.dash-summary-label{text-align:center;font-size:9px;color:#60656c;margin:3px 0 auto}
+.dash-summary-foot{text-align:center;font-size:8px;color:#89909a;margin-top:15px}
+.dash-table-card{background:#fff;border-radius:5px;border:1px solid #e7e9ed;min-width:0;overflow:hidden}
+.dash-table-toolbar{min-height:38px;padding:5px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.dash-table-toolbar>strong{font-size:10px;font-weight:600;color:#111827}
+.dash-filters{display:flex;gap:13px;align-items:center;flex-wrap:wrap}
+.dash-filters label{font-size:10px;color:#64748b;white-space:nowrap}
+.dash-filters .dash-select{font-size:10px;min-width:45px}
+.dash-table-wrap{overflow:auto}
+.dash-data-table{width:100%;border-collapse:collapse;white-space:nowrap}
+.dash-data-table th{background:#31536b;color:#fff;font-size:9px;padding:7px 8px;font-weight:600;border:0}
+.dash-data-table td{font-size:10px;padding:8px;border-bottom:1px solid #edf0f2}
+.dash-data-table tbody tr{cursor:pointer}
+.dash-data-table tbody tr:hover{background:#f4f8fb}
+@media(max-width:900px){.reference-dashboard{grid-template-columns:110px minmax(0,1fr)}.dash-top-panels{grid-template-columns:minmax(220px,1.5fr) minmax(120px,1fr)}.dash-top-panels .summary-card:last-child{grid-column:2}}
+@media(max-width:620px){.reference-dashboard{grid-template-columns:1fr}.dash-left-stack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.user-overview{min-height:115px}.dash-kpi-card{min-height:115px;flex-direction:column;justify-content:center;text-align:center}.dash-top-panels{grid-template-columns:1fr 1fr}.performance-card{grid-column:1/-1}.dash-top-panels .summary-card:last-child{grid-column:auto}.dash-table-toolbar{align-items:flex-start}.dash-filters{gap:5px}}
+
+
+.ops-section{margin-top:18px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,1fr);gap:14px}
+.ops-panel{background:#fff;border:1px solid var(--line);border-radius:13px;padding:17px;box-shadow:var(--shadow);min-width:0}
+.ops-panel h3{margin:0;font-size:14px}.ops-panel .ops-sub{color:var(--muted);font-size:11px;margin:4px 0 13px}
+.ops-list{display:grid;gap:9px}.ops-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px;border:1px solid #edf0f4;border-radius:9px}
+.ops-item-main{min-width:0}.ops-item-main strong{display:block;font-size:12px}.ops-item-main small{color:var(--muted);font-size:10px}
+.ops-date{font-size:11px;font-weight:700;white-space:nowrap;color:#8b4b17}
+.status-pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#edf3fb;color:#315f91}
+.status-pill.pending{background:#fff4df;color:#946316}.status-pill.loaded{background:#e8f5ed;color:#28734a}.status-pill.shipped{background:#e9efff;color:#425ca8}.status-pill.completed{background:#e8f5ed;color:#28734a}
+.handover-editor{display:grid;gap:9px;margin-top:16px}.handover-editor label{font-size:11px;font-weight:700;color:#52647a}
+.handover-editor select,.handover-editor textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font:inherit;font-size:12px;background:#fff;color:var(--ink)}
+.handover-editor textarea{min-height:82px;resize:vertical}.ops-empty{color:var(--muted);font-size:12px;padding:12px;text-align:center;background:#f8fafc;border-radius:8px}
+@media(max-width:760px){.ops-section{grid-template-columns:1fr}}
+
+
+.deadline-tabs{display:flex;gap:8px;margin:12px 0}
+.deadline-tab{border:1px solid var(--line);background:#f7f9fc;color:#53677d;border-radius:8px;padding:8px 14px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.deadline-tab.active{background:#e8f1fa;border-color:#6b9bc4;color:#245b88}
+.pending-summary{font-size:11px;font-weight:700;color:#8a5a13;background:#fff5df;border:1px solid #f2dfb6;border-radius:8px;padding:8px 10px;margin:11px 0}
+.ops-item{flex-wrap:wrap}
+.tracker-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.tracker-table{min-width:950px}.tracker-subject{min-width:230px;max-width:340px;white-space:normal;overflow-wrap:anywhere;line-height:1.5}.tracker-remark{min-width:220px;max-width:350px;white-space:normal;line-height:1.5}.tracker-status{display:inline-block;border-radius:16px;padding:5px 8px;font-size:10px;font-weight:700;white-space:normal}.tracker-status.processing{background:#fff3d8;color:#8a5a13}.tracker-status.released{background:#e3f2eb;color:#28734a}.tracker-status.cancelled{background:#f9e7ea;color:#9d3444}
+
+
+.booking-status-options{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px}
+.booking-status-option{position:relative;cursor:pointer;flex:1;min-width:95px}
+.booking-status-option input{position:absolute;opacity:0;pointer-events:none}
+.booking-status-option span{display:block;text-align:center;padding:11px 15px;border-radius:9px;border:1px solid #d9e0e8;font-size:12px;font-weight:800;background:#f7f9fc;color:#536273;transition:.15s}
+.booking-status-option.confirm span{background:#edf8f0;border-color:#b9dfc4;color:#247344}
+.booking-status-option.pending span{background:#fff8e8;border-color:#f0d99b;color:#946512}
+.booking-status-option.cancel span{background:#fff0f0;border-color:#efc0c0;color:#b4232c}
+.booking-status-option.confirm input:checked+span{background:#ccebd5;border:2px solid #32965a}
+.booking-status-option.pending input:checked+span{background:#ffebba;border:2px solid #d49a18}
+.booking-status-option.cancel input:checked+span{background:#f8d2d2;border:2px solid #cf3e46}
+.tracker-status.confirm{background:#e4f4e9;color:#247344}
+.tracker-status.pending{background:#fff1c9;color:#946512}
+.tracker-status.cancel{background:#f9dddd;color:#b4232c}
+
+
+/* Simplified overview dashboard inspired by the supplied reference */
+.overview-heading{display:flex;align-items:flex-end;justify-content:space-between;margin:2px 0 18px}
+.overview-heading h2{font-size:22px;font-weight:750;margin:0;color:#202936}
+.overview-heading p{font-size:12px;color:#718096;margin:5px 0 0}
+.overview-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.overview-kpi{border-radius:13px;padding:17px 18px;min-height:126px;display:flex;flex-direction:column;justify-content:space-between}
+.overview-kpi-label{font-size:13px;letter-spacing:.35px;font-weight:600;color:#5c6470}
+.overview-kpi-value{font-size:34px;line-height:1.1;font-weight:750;margin:10px 0 7px}
+.overview-kpi-desc{font-size:13px;color:#5d6570}
+.kpi-blue{background:#e8f0fc}.kpi-blue .overview-kpi-value{color:#3479bd}
+.kpi-amber{background:#fbf1e1}.kpi-amber .overview-kpi-value{color:#bd781d}
+.kpi-green{background:#e8f5eb}.kpi-green .overview-kpi-value{color:#27834c}
+.kpi-red{background:#fbe9e9}.kpi-red .overview-kpi-value{color:#c74343}
+.overview-section{border-top:1px solid #e5e9ef;padding:19px 0 18px;margin-top:3px}
+.overview-section h3{font-size:17px;font-weight:750;letter-spacing:.15px;margin:0 0 14px;color:#202936}
+.overview-deadline-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0}
+.overview-deadline-name{background:none;border:0;padding:3px 0;font:inherit;font-size:16px;color:#263445;cursor:pointer}
+.overview-deadline-name:hover{text-decoration:underline}
+.overview-count-badge{background:#ffe6dc;color:#d94d22;border-radius:18px;padding:5px 11px;font-size:12px;font-weight:700}
+.overview-deadline-detail{margin-top:10px;padding:11px 12px;background:#f8fafc;border-radius:10px}
+.overview-deadline-detail .deadline-tabs{margin:0 0 10px}
+.overview-section-desc{font-size:12px;color:#788494;margin:-7px 0 10px}
+.overview-loading-count{display:inline-block;background:#fff3df;color:#956214;border:1px solid #f0dfbb;border-radius:8px;padding:7px 10px;font-size:11px;font-weight:700;margin:0 0 10px}
+.overview-loading .ops-list{display:grid;gap:8px}
+.overview-loading .ops-item{background:#fff;border:1px solid #e8edf3;border-radius:9px;padding:11px 12px}
+.overview-loading .ops-item-main strong{font-size:12px;color:#273548}
+.overview-loading .ops-item-main small{font-size:10px;color:#778396}
+.overview-loading .status-pill{display:inline-block;margin-top:5px}
+.overview-legacy{display:none!important}
+@media(max-width:600px){.overview-kpis{gap:9px}.overview-kpi{padding:13px;min-height:112px}.overview-kpi-value{font-size:29px}.overview-kpi-label{font-size:11px}.overview-kpi-desc{font-size:11px}.overview-heading h2{font-size:19px}}
+
+
+#addOwnerButton,#deleteOwnerButton{white-space:nowrap;font-size:11px;padding:9px 12px}
+.owner-picker{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+
+/* Refined team member dropdown */
+.owner-picker-menu{min-width:220px;padding:7px;border:1px solid #e7eaf0;border-radius:12px;box-shadow:0 12px 30px rgba(25,39,58,.13);background:#fff}
+.owner-picker-menu>button{font-size:12px;font-weight:650;color:#344054;padding:10px 11px;margin-bottom:3px}
+.owner-picker-menu>button:first-child{background:#f3f6fa;color:#344f6b}
+.owner-picker-menu>button:first-child:hover{background:#eaf0f7;color:#234c72}
+.owner-menu-row{display:flex;align-items:center;gap:8px;width:100%;padding:3px 4px;border-radius:8px}
+.owner-menu-row+.owner-menu-row{border-top:1px solid #f0f2f5}
+.owner-picker-menu .owner-menu-name{display:block;flex:1;width:auto;min-width:0;text-align:left;padding:9px 8px;border:0;border-radius:7px;background:transparent;color:#344054;font-size:12px;font-weight:550}
+.owner-picker-menu .owner-menu-name:hover{background:#f5f7fa;color:#253b53}
+.owner-picker-menu .owner-menu-remove{display:inline-flex;align-items:center;justify-content:center;flex:0 0 24px;width:24px;height:24px;padding:0;border:1px solid #e4e7ec;border-radius:6px;background:#fff;color:#98a2b3;font-size:16px;font-weight:500;line-height:1;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.owner-picker-menu .owner-menu-remove:hover{background:#fff1f0;border-color:#f2c7c4;color:#c43d36}
+.owner-picker-menu button:focus-visible{outline:2px solid #8db5dc;outline-offset:1px}
+
+
+/* Loading calendar planning view */
+.calendar-page-head{align-items:flex-end;gap:14px;flex-wrap:wrap}
+.calendar-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.calendar-controls .field{min-width:190px;height:36px}
+#calendarMonthLabel{min-width:150px;text-align:center;font-size:13px;color:#26364a}
+.calendar-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
+.calendar-stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.calendar-stat span{display:block;font-size:10px;font-weight:700;letter-spacing:.55px;color:#6b7787}
+.calendar-stat strong{display:block;font-size:25px;line-height:1.2;color:#234f75;margin:5px 0}
+.calendar-stat small{font-size:10px;color:#8a94a2}
+.calendar-panel{padding:15px}
+.calendar-legend{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:12px;color:#6f7c8c;font-size:10px}
+.legend-dot{display:inline-block;width:8px;height:8px;background:#e45b52;border-radius:50%;margin-right:5px}
+.today-outline,.selected-outline{display:inline-block;width:12px;height:12px;border:1.5px solid #477fae;border-radius:3px;vertical-align:-2px;margin-right:5px}
+.selected-outline{background:#edf5ff;border-color:#80aee8}
+.calendar-day{position:relative;min-height:94px}
+.calendar-day.is-today{outline:1.5px solid #477fae;outline-offset:-3px}
+.calendar-day .day-count{font-size:10px;font-weight:700;color:#477fae}
+.calendar-day .calendar-event-dots{align-items:center}
+.calendar-day .calendar-event-dots .owner-dot{background:#e45b52!important}
+.calendar-day .calendar-event-dots:after{content:attr(data-count);font-size:10px;font-weight:700;color:#477fae}
+.calendar-day-total{font-size:10px;font-weight:700;letter-spacing:.4px;color:#477fae;background:#edf4fb;padding:6px 9px;border-radius:20px;white-space:nowrap}
+.calendar-detail-panel .panel-title{align-items:center}
+@media(max-width:720px){.calendar-stats{gap:7px}.calendar-stat{padding:11px 9px}.calendar-stat strong{font-size:21px}.calendar-stat span{font-size:9px}.calendar-controls{width:100%}.calendar-controls .field{flex:1;min-width:150px}#calendarMonthLabel{min-width:120px}.calendar-day{min-height:74px}.calendar-legend{gap:10px}}
+
+
+/* Calendar event labels: CY / SI / VGM */
+.calendar-legend{align-items:center}
+.cal-legend-item{display:inline-flex;align-items:center;gap:5px}
+.cal-chip{display:inline-flex;align-items:center;justify-content:center;min-width:27px;padding:3px 5px;border-radius:4px;font-size:9px;line-height:1.2;font-weight:800;letter-spacing:.2px}
+.cal-chip.cy{background:#FCE8E7;color:#B83F39}
+.cal-chip.si{background:#FFF1DB;color:#A66A17}
+.cal-chip.vgm{background:#E5F0FC;color:#32689D}
+.calendar-day{display:flex;flex-direction:column;align-items:stretch;gap:4px;text-align:left;overflow:hidden}
+.calendar-day .day-number{align-self:flex-start}
+.calendar-day-events{display:flex;flex-direction:column;gap:3px;width:100%;min-width:0}
+.calendar-event-label{display:block;width:100%;padding:2px 4px;border-radius:4px;font-size:9px;line-height:1.25;font-weight:800;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.calendar-event-label.cy{background:#FCE8E7;color:#B83F39}
+.calendar-event-label.si{background:#FFF1DB;color:#A66A17}
+.calendar-event-label.vgm{background:#E5F0FC;color:#32689D}
+.calendar-more{font-size:9px;color:#477fae;font-weight:700;padding-left:3px}
+.calendar-day .calendar-event-dots{display:none!important}
+.calendar-day .day-count{display:none!important}
+.calendar-event-type{display:inline-flex;align-items:center;justify-content:center;padding:3px 6px;border-radius:4px;font-size:9px;font-weight:800;white-space:nowrap}
+.calendar-event-type.cy{background:#FCE8E7;color:#B83F39}
+.calendar-event-type.si{background:#FFF1DB;color:#A66A17}
+.calendar-event-type.vgm{background:#E5F0FC;color:#32689D}
+@media(max-width:720px){.calendar-event-label{font-size:8px;padding:2px 3px}.calendar-day{min-height:86px}.calendar-legend{gap:9px}}
+
+
+/* Compact calendar controls after removing duplicate dashboard KPIs */
+.calendar-controls .field{min-width:150px;height:36px}
+@media(max-width:720px){.calendar-controls .field{min-width:135px;flex:1}}
+
+/* Owner selector belongs to Overview only */
+#page-dashboard .owner-toolbar{margin:0 0 16px!important}
+#page-dashboard .owner-picker-trigger{min-width:230px;text-align:left;display:flex;justify-content:space-between;align-items:center}
+@media(max-width:700px){#page-dashboard .owner-picker{width:100%}#page-dashboard .owner-picker-trigger{min-width:0;flex:1}}
+/* ---- Cloud login (Supabase) ---- */
+#authOverlay{position:fixed;inset:0;z-index:9999;background:#F7F2E0;display:flex;align-items:center;justify-content:center;padding:20px}
+#authOverlay[hidden]{display:none}
+.auth-card{width:100%;max-width:380px;background:#fff;border:1px solid #E6DDCE;border-radius:16px;padding:28px;box-shadow:0 18px 40px rgba(91,0,21,.08)}
+.auth-card h1{margin:0 0 4px;color:#5B0015;font-size:22px}.auth-card p{margin:0 0 18px;color:#718096;font-size:13px}
+.auth-card label{display:block;font-size:12px;font-weight:600;margin:12px 0 5px}
+.auth-card input{width:100%;padding:10px 12px;border:1px solid #E6DDCE;border-radius:9px}
+.auth-card button{width:100%;margin-top:18px;padding:11px;border:0;border-radius:9px;background:#5B0015;color:#fff;font-weight:600}
+.auth-card button:disabled{opacity:.6;cursor:wait}
+#authMsg{min-height:18px;margin-top:12px;font-size:12px;color:#c43d36}
+.cloud-box{margin:18px 10px 0;padding-top:12px;border-top:1px solid #8C5360;font-size:11px;color:#F3DDE2;line-height:1.6;word-break:break-all}
+.cloud-box button{margin-top:6px;margin-right:4px;padding:5px 9px;font-size:11px;border-radius:7px;border:1px solid #D8AEB7;background:transparent;color:#fff}
+#syncState.err{color:#ffb4ab}
+@media(max-width:720px){.cloud-box{display:none}}
+</style>
+</head>
+<body>
+<div id="authOverlay">
+ <form class="auth-card" onsubmit="cloudLogin(event)">
+  <h1>Export Pulse</h1><p>เข้าสู่ระบบเพื่อใช้งาน Shipment Workspace ของทีม</p>
+  <label for="authEmail">อีเมล</label><input id="authEmail" type="email" autocomplete="username" required>
+  <label for="authPassword">รหัสผ่าน</label><input id="authPassword" type="password" autocomplete="current-password" required>
+  <button type="submit" id="authBtn">เข้าสู่ระบบ</button>
+  <div id="authMsg"></div>
+ </form>
+</div>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">↗</div><div><h1>Export Pulse</h1><small>EXPORT TEAM WORKSPACE</small></div></div>
+  <div class="nav-label">WORKSPACE</div>
+  <div class="nav-list">
+    <button class="nav-btn active" data-page="dashboard"><span class="ico">●</span>OVERVIEW</button>
+    <button class="nav-btn" data-page="calendar"><span class="ico">▦</span>OPERATIONS CALENDAR</button>
+    <button class="nav-btn" data-page="tracker"><span class="ico">☷</span>SHIPMENT STATUS</button>
+    <button class="nav-btn" data-page="bookings"><span class="ico">＋</span>ADD SHIPMENT</button>
+  </div>
+  <div class="cloud-box"><div style="opacity:.7">เข้าสู่ระบบในชื่อ</div><div id="cloudUser">—</div><div id="syncState">กำลังเชื่อมต่อ...</div><button type="button" onclick="cloudReload()">⟳ โหลดข้อมูลล่าสุด</button><button type="button" onclick="cloudLogout()">ออกจากระบบ</button></div>
+  <div class="side-note">TEAM WORKSPACE · CLOUD</div>
+</aside>
+<main class="main">
+  <header class="topbar">
+    <div><div class="eyebrow">EXPORT OPERATIONS / TEAM WORKSPACE</div><h2 id="pageTitle">ภาพรวม Shipment</h2><div class="sub" id="pageSub">ติดตามงาน Booking และกำหนดการโหลดของทีม CS Export</div></div>
+    <div class="top-actions"><div class="date-chip" id="todayChip">◷ 12 ต.ค. 2026</div><div class="avatar">EP</div></div>
+  </header>
+<section class="page active" id="page-dashboard">
+    <div class="overview-heading">
+      <div>
+        <h2>OVERVIEW</h2>
+        <p>ภาพรวม Shipment และกำหนดการสำคัญของทีม</p>
+      </div>
+    </div>
+
+<div class="panel owner-toolbar" style="margin-bottom:16px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div><strong style="font-size:13px">เลือกเจ้าของงาน</strong><div class="small-note" style="margin:2px 0 0">กดปุ่มเพื่อเลือกชื่อและแสดงเฉพาะ Booking ของคนนั้น</div></div>
+    <div class="owner-picker">
+      <button type="button" class="btn owner-picker-trigger" id="ownerPickerTrigger" onclick="toggleOwnerMenu()" aria-expanded="false">All — Team Performance <span aria-hidden="true">▾</span></button>
+      <div class="owner-picker-menu" id="ownerPickerMenu" hidden></div>
+      <button type="button" class="btn" id="addOwnerButton" onclick="addTeamMember()" title="เพิ่มสมาชิกใหม่">＋ ADD NAME</button>
+    </div>
+    <div id="ownerUploadHint" class="small-note" style="width:100%;margin:0">ขณะนี้แสดงข้อมูลรวมของทีม · เลือกชื่อสมาชิกเพื่อดูเฉพาะ Booking ของคนนั้น</div>
+  </div>
+
+    <div class="overview-kpis">
+      <div class="overview-kpi kpi-blue">
+        <div class="overview-kpi-label">TOTAL SHIPMENTS</div>
+        <div class="overview-kpi-value" id="overviewTotal">0</div>
+        <div class="overview-kpi-desc">จำนวน Shipment ทั้งหมด</div>
+      </div>
+      <div class="overview-kpi kpi-amber">
+        <div class="overview-kpi-label">UPCOMING LOADING</div>
+        <div class="overview-kpi-value" id="overviewUpcoming">0</div>
+        <div class="overview-kpi-desc">รายการที่ใกล้ถึงวันโหลด</div>
+      </div>
+      <div class="overview-kpi kpi-green">
+        <div class="overview-kpi-label">BOOKING CONFIRMED</div>
+        <div class="overview-kpi-value" id="overviewConfirmed">0</div>
+        <div class="overview-kpi-desc">Booking ที่ยืนยันแล้ว</div>
+      </div>
+      <div class="overview-kpi kpi-red">
+        <div class="overview-kpi-label">BOOKING PENDING</div>
+        <div class="overview-kpi-value" id="overviewPending">0</div>
+        <div class="overview-kpi-desc">รายการที่รอยืนยัน Booking</div>
+      </div>
+    </div>
+
+    <section class="overview-section">
+      <h3>DEADLINE REMINDER</h3>
+      <div class="overview-deadline-row">
+        <button type="button" class="overview-deadline-name" onclick="setDeadlineType('Closing SI')">Closing SI</button>
+        <span class="overview-count-badge" id="overviewSICount">0 รายการ</span>
+      </div>
+      <div class="overview-deadline-row">
+        <button type="button" class="overview-deadline-name" onclick="setDeadlineType('VGM Closing')">Closing VGM</button>
+        <span class="overview-count-badge" id="overviewVGMCount">0 รายการ</span>
+      </div>
+      <div class="overview-deadline-detail">
+        <div class="deadline-tabs">
+          <button type="button" class="deadline-tab active" id="deadlineTabSI" onclick="setDeadlineType('Closing SI')">ดู Closing SI</button>
+          <button type="button" class="deadline-tab" id="deadlineTabVGM" onclick="setDeadlineType('VGM Closing')">ดู Closing VGM</button>
+        </div>
+        <div class="ops-list" id="opsDeadlineList"><div class="ops-empty">เลือกชื่อเจ้าของงานเพื่อดูรายการกำหนดการ</div></div>
+      </div>
+    </section>
+
+    <section class="overview-section overview-loading">
+      <h3>UPCOMING LOADING</h3>
+      <p class="overview-section-desc">รายการ Shipment ที่มีกำหนดโหลด เรียงจากวันโหลดที่ใกล้ที่สุด</p>
+      <div class="overview-loading-count" id="bookingPendingSummary">Upcoming Loading: 0 รายการ</div>
+      <div class="ops-list" id="opsStatusList"><div class="ops-empty">เลือกชื่อเจ้าของงานเพื่อดูวันโหลดสินค้า</div></div>
+    </section>
+
+    <div class="overview-legacy" aria-hidden="true">
+      <span id="dashOwnerName"></span><span id="dashOwnerSub"></span>
+      <span id="dashTotalShipments"></span><span id="dashPastLoads"></span>
+      <span id="dashUpcomingLoads"></span><span id="dashUpcomingFoot"></span><span id="dashMissingDate"></span>
+      <select id="dashYearSelect"></select><canvas id="teamPerformanceChart"></canvas>
+      <select id="dashTableYear"></select><select id="dashTableMonth"><option value="all">All</option></select>
+      <select id="dashTableOwner"><option value="active">Selected</option></select>
+      <span id="dashFoundCount"></span><table><tbody id="dashShipmentRows"></tbody></table>
+    </div>
+    <div class="footnote">ข้อมูลแสดงตามชื่อเจ้าของงานที่เลือกด้านบน · วันโหลดอ้างอิงจาก CY Date</div>
+  </section>
+
+  <section class="page" id="page-calendar">
+    <div class="section-head calendar-page-head">
+      <div><h3>OPERATIONS CALENDAR</h3><p>วางแผนและตรวจสอบวันรับตู้ (CY Date) ของทีม CS Export</p></div>
+      <div class="calendar-controls">
+        <select class="field" id="calendarOwnerFilter" onchange="renderCalendar()" aria-label="Filter by owner">
+          <option value="active">ตามชื่อที่เลือกด้านบน</option><option value="All">All — Team Performance</option>
+        </select>
+        <select class="field" id="calendarEventFilter" onchange="renderCalendar()" aria-label="Filter event type">
+          <option value="ALL">All Events</option><option value="CY">CY / Loading</option><option value="SI">Closing SI</option><option value="VGM">Closing VGM</option>
+        </select>
+        <button class="btn" onclick="goCalendarToday()">TODAY</button>
+        <button class="btn" onclick="changeCalendarMonth(-1)" aria-label="Previous month">‹</button>
+        <strong id="calendarMonthLabel"></strong>
+        <button class="btn" onclick="changeCalendarMonth(1)" aria-label="Next month">›</button>
+      </div>
+    </div>
+    <div class="panel calendar-panel">
+      <div class="calendar-legend"><span class="cal-legend-item"><b class="cal-chip cy">CY</b> Loading</span><span class="cal-legend-item"><b class="cal-chip si">SI</b> Closing SI</span><span class="cal-legend-item"><b class="cal-chip vgm">VGM</b> Closing VGM</span><span><i class="today-outline"></i> Today</span><span><i class="selected-outline"></i> Selected date</span></div>
+      <div class="calendar-grid" id="loadingCalendar"></div>
+      <div class="small-note">แสดงกำหนดการจาก Booking: CY, Closing SI และ Closing VGM · เลือกวันที่เพื่อดูรายละเอียดด้านล่าง</div>
+    </div>
+    <div class="panel table-panel calendar-detail-panel">
+      <div class="panel-title"><div><h3 id="calendarDayTitle">รายละเอียดงานโหลด</h3><p id="calendarDaySubtitle">รายการ Booking ของวันที่เลือก</p></div><span class="calendar-day-total" id="calendarDayTotal">0 SHIPMENTS</span></div>
+      <div class="table-wrap"><table><thead><tr><th>BOOKING NO.</th><th>SHIPPER</th><th>OWNER</th><th>EVENT</th><th>DEADLINE / TIME</th><th>ETD</th></tr></thead><tbody id="calendarDayRows"></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="page" id="page-tracker">
+    <div class="section-head"><div><h3>SHIPMENT STATUS</h3><p>ติดตาม Shipment ที่ยังรอการยืนยัน Booking จาก Carrier · เลือกสถานะเพื่ออัปเดตความคืบหน้า</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" onclick="openTrackerForm()">＋ ADD STATUS</button><button class="btn" style="color:#B4232C;border-color:#efc0c0" onclick="deleteSelectedTrackerRecords()">DELETE</button></div></div>
+    <div class="panel"><div class="tracker-toolbar"><input class="field search" id="trackerSearch" placeholder="ค้นหา Subject Email..." oninput="renderTracker()"><select class="field" id="trackerStatusFilter" onchange="renderTracker()"><option value="">All Status</option><option>CONFIRM</option><option>PENDING</option><option>CANCEL</option></select><span id="trackerCount" class="small-note"></span></div>
+    <div class="table-wrap"><table class="tracker-table"><thead><tr><th style="width:38px"><input type="checkbox" id="trackerSelectAll" onchange="toggleAllTrackerRows(this.checked)" aria-label="เลือกทั้งหมด"></th><th>SUBJECT EMAIL - AGENT</th><th>SUBJECT EMAIL - SHIPPER</th><th>BOOKING STATUS</th><th>REMARK</th><th></th></tr></thead><tbody id="trackerRows"></tbody></table></div></div>
+    <p class="small-note">ใช้สำหรับติดตาม Shipment ที่ยังไม่มีการยืนยัน Booking หรือกำลังรอ Carrier ปล่อย Booking</p>
+  </section>
+  <section class="page" id="page-bookings">
+    <div class="section-head"><div><h3>ADD SHIPMENT</h3><p>เลือก Name ก่อน จากนั้นกด ADD SHIPMENT เพื่อโยนไฟล์ Booking PDF และบันทึกเป็นงานของเจ้าของที่เลือก</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" onclick="triggerBookingPDFUpload()">＋ ADD SHIPMENT</button><input id="bookingPdfInput" type="file" accept="application/pdf,.pdf" hidden onchange="importBookingPDF(event)"><button class="btn" onclick="clearAllData()" style="color:#5B0015;border-color:#f0c6ca">DELETE</button></div></div>
+    <div class="panel">
+      <div id="bookingOcrStatus" class="ocr-progress" role="status" aria-live="polite"></div>
+      <div class="filters"><input id="bookingSearch" class="field search" placeholder="ค้นหา Booking Ref, Shipper, Commodity หรือปลายทาง..." oninput="renderBookings()"><select id="destFilter" class="field" onchange="renderBookings()"><option value="">ทุกปลายทาง</option></select><select id="dataFilter" class="field" onchange="renderBookings()"><option value="">ข้อมูลทุกประเภท</option><option>ข้อมูลจริงจากเอกสาร</option><option>ข้อมูลตัวอย่าง</option><option>เพิ่มโดยผู้ใช้</option></select></div>
+      <div class="table-wrap"><table><thead><tr><th>BOOKING / B/L REF</th><th>CUSTOMER / SHIPPER</th><th>COMMODITY</th><th>VOLUME</th><th>PORT OF DELIVERY</th><th>ETD</th><th>CY DATE</th><th>OWNER</th><th>ประเภทข้อมูล</th><th></th></tr></thead><tbody id="bookingRows"></tbody></table></div>
+      <div class="small-note" id="bookingCount"></div><div class="small-note">เพิ่ม Shipment ด้วยการอัปโหลด Booking PDF · คลิกดูรายละเอียดเพื่ออัปเดต Shipment Status, อัปเดต Shipment Status และแนบไฟล์ HBL / MBL</div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<div class="modal-backdrop" id="bookingModal">
+ <div class="modal"><div class="modal-head"><h3 id="bookingModalTitle">เพิ่ม Booking ใหม่</h3><button class="btn" onclick="closeModal()">ปิด ✕</button></div>
+ <form id="bookingForm"><div id="pdfImportNote" class="small-note" style="display:none;background:#edf5e4;border-radius:8px;padding:10px;margin-bottom:12px">ข้อมูลนี้อ่านจาก Booking PDF แล้ว กรุณาตรวจสอบความถูกต้องก่อนบันทึก Shipment</div><div class="form-grid"><div class="form-field"><label>Booking No. *</label><input name="Booking No." type="text" required placeholder="เลข Booking จากเอกสาร"></div><div class="form-field"><label>Booking Date</label><input name="Booking Date" type="date"></div><div class="form-field"><label>Customer (Shipper)</label><input name="Customer" type="text"></div><div class="form-field"><label>Attention / PIC</label><input name="Attention / PIC" type="text"></div><div class="form-field"><label>Agent Name</label><input name="Agent Name" type="text"></div><div class="form-field"><label>Commodity</label><input name="Commodity" type="text"></div><div class="form-field"><label>Volume</label><input name="Volume" type="text"></div><div class="form-field"><label>Carrier</label><input name="Carrier" type="text"></div><div class="form-field"><label>Place of Receipt</label><input name="Place of Receipt" type="text"></div><div class="form-field"><label>Port of Loading (POL)</label><input name="Port of Loading (POL)" type="text"></div><div class="form-field"><label>Destination (POD)</label><input name="Destination (POD)" type="text"></div><div class="form-field"><label>Feeder Name</label><input name="Feeder Name" type="text"></div><div class="form-field"><label>Voyage</label><input name="Voyage" type="text"></div><div class="form-field"><label>ETD</label><input name="ETD" type="date"></div><div class="form-field"><label>ETA</label><input name="ETA" type="date"></div><div class="form-field"><label>Closing Time (Date @ Time)</label><input name="Closing Time" type="text" placeholder="16/03/2026 @16:00"></div><div class="form-field"><label>CY Date</label><input name="CY Date" type="date"></div><div class="form-field"><label>CY Depot / Location</label><input name="CY Depot / Location" type="text"></div><div class="form-field"><label>Return Date</label><input name="Return Date" type="date"></div><div class="form-field"><label>Return Depot / Location</label><input name="Return Depot / Location" type="text"></div><div class="form-field"><label>VGM Closing (Date @ Time)</label><input name="VGM Closing" type="text" placeholder="16/03/2026 @16:00"></div><div class="form-field"><label>Closing SI (Date @ Time)</label><input name="Closing SI" type="text" placeholder="16/03/2026 @16:00"></div><div class="form-field"><label>Paperless Code</label><input name="Paperless Code" type="text"></div><div class="form-field"><label>Remark</label><input name="Remark" type="text"></div><div style="display:none" aria-hidden="true"><input name="Booking Ref"><input name="Shipper"><input name="Forwarding Agent"><input name="Quantity / Volume"><input name="Place of Delivery (POD)"><input name="ETD-LCH"><input name="ETA-DEST"><input name="VGM Closing Date"><input name="Closing VGM Time"><input name="Closing SI"><input name="Paperless Ref."><input name="Remarks"><input name="CY Place / Date"><input name="Return Place / Date"><input name="Feeder Name / Voy."><input name="Vessel Name / Voy."></div></div><div class="modal-actions"><button type="button" class="btn" onclick="closeModal()">ยกเลิก</button><button class="btn primary" type="submit">บันทึก Booking</button></div></form>
+ </div>
+</div>
+<div class="modal-backdrop" id="trackerModal"><div class="modal"><div class="modal-head"><h3 id="trackerFormTitle">Add Shipment Status</h3><button class="btn" onclick="closeTrackerForm()">ปิด ✕</button></div><form id="trackerForm" onsubmit="saveTrackerForm(event)"><input type="hidden" id="trackerEditId"><div class="form-grid"><div class="form-field" style="grid-column:1/-1"><label>SUBJECT EMAIL - AGENT</label><input id="trackerAgent" placeholder="ใส่ Subject Email ของ Agent"></div><div class="form-field" style="grid-column:1/-1"><label>SUBJECT EMAIL - SHIPPER</label><input id="trackerShipper" placeholder="ใส่ Subject Email ของ Shipper"></div><div class="form-field" style="grid-column:1/-1"><label>BOOKING STATUS</label><div class="booking-status-options"><label class="booking-status-option confirm"><input type="radio" name="trackerStatusChoice" value="CONFIRM"><span>CONFIRM</span></label><label class="booking-status-option pending"><input type="radio" name="trackerStatusChoice" value="PENDING"><span>PENDING</span></label><label class="booking-status-option cancel"><input type="radio" name="trackerStatusChoice" value="CANCEL"><span>CANCEL</span></label></div></div><div class="form-field" style="grid-column:1/-1"><label>REMARK</label><textarea id="trackerRemark" placeholder="ใส่รายละเอียดเพิ่มเติม เช่น รอ Carrier ปล่อย Booking / แจ้งกำหนดการใหม่" style="width:100%;min-height:90px;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;resize:vertical"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" onclick="closeTrackerForm()">Cancel</button><button class="btn primary" type="submit">Save Status</button></div></form></div></div>
+<div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()"><div class="detail-panel" id="detailPanel"></div></div>
+<div class="pdf-viewer" id="pdfViewer" onclick="if(event.target===this)closePdfViewer()"><div class="pdf-viewer-card"><div class="pdf-viewer-head"><strong id="pdfViewerTitle">ดูเอกสาร PDF</strong><div class="pdf-viewer-actions"><a class="btn" id="pdfDownloadLink" href="#" download="document.pdf" style="text-decoration:none">ดาวน์โหลด PDF</a><button class="btn" onclick="closePdfViewer()">ปิด ✕</button></div></div><iframe id="pdfFrame" title="PDF Viewer"></iframe></div></div>
+
+<script>
+const initialData = [];
+const STORAGE_KEY = "exportPulseBookingsSeabraCleanFieldsV4";
+// Version Seabra V2 starts with a clean database; older KMTC/SINOKOR-era local data are not loaded.
+let bookings = [];  // filled from Supabase after login (see cloudBoot)
+bookings.forEach(b=>{if(b && b._dataType==="ข้อมูลจริงจากเอกสาร")b["Shipment Status"]="Booking Confirmed";});
+let activeOwner = "All";
+const TEAM_KEY = "exportPulseTeamMembersV1";
+let teamMembers = [];  // filled from Supabase table team_members
+function saveTeamMembers(){cloudSchedule("team");}
+let calendarCursor = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+let selectedCalendarDate = new Date().toISOString().slice(0,10);
+
+function visibleBookings(){
+ if(activeOwner==="All")return bookings.slice();
+ if(!teamMembers.includes(activeOwner))return [];
+ return bookings.filter(b=>String(b["Job Owner"]||b["Owner"]||"").trim()===activeOwner);
+}
+function renderOwnerMenu(){
+ const menu=document.getElementById("ownerPickerMenu");if(!menu)return;
+ menu.innerHTML=[`<button type="button" onclick="setOwner('All')">All — Team Performance</button>`,...teamMembers.map(n=>`<div class="owner-menu-row"><button type="button" class="owner-menu-name" onclick="setOwner(${JSON.stringify(n).replace(/"/g,"&quot;")})">${esc(n)}</button><button type="button" class="owner-menu-remove" title="ลบชื่อ ${esc(n)}" aria-label="ลบชื่อ ${esc(n)}" onclick="event.stopPropagation();deleteTeamMemberByName(${JSON.stringify(n).replace(/"/g,"&quot;")})">−</button></div>`)].join("");
+}
+function toggleOwnerMenu(){
+ const menu=document.getElementById("ownerPickerMenu"),trigger=document.getElementById("ownerPickerTrigger");
+ if(!menu||!trigger)return;
+ renderOwnerMenu();menu.hidden=!menu.hidden;trigger.setAttribute("aria-expanded",String(!menu.hidden));
+}
+function setOwner(name){
+ if(name!=="All"&&!teamMembers.includes(name))return;
+ activeOwner=name;
+ const menu=document.getElementById("ownerPickerMenu"),trigger=document.getElementById("ownerPickerTrigger");
+ if(menu)menu.hidden=true;
+ if(trigger){trigger.innerHTML=`${esc(name)} <span aria-hidden="true">▾</span>`;trigger.setAttribute("aria-expanded","false");}
+ const hint=document.getElementById("ownerUploadHint");
+ if(hint)hint.textContent=name==="All"?"กำลังแสดงข้อมูลรวมของทีม · หากต้องการเพิ่ม Booking กรุณาเลือกชื่อสมาชิกก่อน": "ไฟล์ Booking ที่เพิ่มตอนนี้จะถูกจัดเป็นงานของ "+name;
+ renderOwnerMenu();refreshAll();renderTracker();
+}
+
+
+function deleteTeamMemberByName(name){
+ if(!teamMembers.includes(name))return;
+ const bookingCount=bookings.filter(b=>String(b["Job Owner"]||b["Owner"]||"").trim()===name).length;
+ const trackerCount=trackerRecords.filter(r=>r.owner===name).length;
+ const detail=bookingCount||trackerCount?`\n\nข้อมูลเดิมที่ผูกกับชื่อนี้จะไม่ถูกลบ และยังดูได้เมื่อเลือก All`:"";
+ if(!confirm(`ต้องการลบชื่อ "${name}" ออกจากรายชื่อสมาชิกหรือไม่?${detail}`))return;
+ teamMembers=teamMembers.filter(x=>x!==name);
+ saveTeamMembers();
+ if(activeOwner===name){
+   activeOwner="";
+   const trigger=document.getElementById("ownerPickerTrigger");
+   if(trigger){trigger.innerHTML='Name <span aria-hidden="true">▾</span>';trigger.setAttribute("aria-expanded","false");}
+   const hint=document.getElementById("ownerUploadHint");
+   if(hint)hint.textContent="กรุณาเลือกชื่อเจ้าของงาน หรือเลือก All เพื่อดูข้อมูลรวมของทีม";
+ }
+ renderOwnerMenu();refreshAll();renderTracker();
+}
+
+function addTeamMember(){
+ const raw=prompt("กรุณากรอกชื่อสมาชิกใหม่:");
+ if(raw===null)return;
+ const name=raw.trim();
+ if(!name){alert("กรุณากรอกชื่อสมาชิก");return;}
+ if(name.toLowerCase()==="all"||teamMembers.some(x=>x.toLowerCase()===name.toLowerCase())){alert("ชื่อนี้มีอยู่แล้ว หรือไม่สามารถใช้ชื่อนี้ได้");return;}
+ teamMembers.push(name);saveTeamMembers();renderOwnerMenu();setOwner(name);
+}
+
+function triggerBookingPDFUpload(){if(activeOwner==="All"||!teamMembers.includes(activeOwner)){alert("กรุณาคลิกเลือกชื่อเจ้าของงานก่อนค่ะ เช่น คลิก ‘อ๋อม’ แล้วจึงโยนไฟล์ Booking");return;}document.getElementById("bookingPdfInput").click();}
+function triggerExcelUpload(){if(activeOwner==="All"||!teamMembers.includes(activeOwner)){alert("กรุณาคลิกเลือกชื่อเจ้าของงานก่อนนำเข้า Excel/CSV");return;}document.getElementById("excelInput").click();}
+
+let monthlyChart = null, destinationChart = null, shipperActiveMonthsChart = null, monthlyBookingPieChart = null;
+let monthlyChartView = "year", monthlyChartSelectedMonth = String(new Date().getMonth());
+let pendingBookingPDF = null;
+let pendingEditRef = null;
+let pdfUpdateTargetRef = null;
+const today = new Date(); today.setHours(0,0,0,0);
+function loadData(){try{const saved=localStorage.getItem(STORAGE_KEY);return saved?JSON.parse(saved):initialData.map(x=>({...x}));}catch(e){return initialData.map(x=>({...x}));}}
+function saveData(){cloudSchedule("bookings");}
+// PDF attachments are stored in Supabase Storage (bucket "shipment-files"); metadata in table shipment_files.
+const DOC_BUCKET="shipment-files";
+function docSafe(v){return String(v).trim().replace(/[^A-Za-z0-9._-]/g,"_")||"no-ref";}
+async function saveShipmentFile(ref,type,file){
+ const id=String(ref)+"::"+type, path=docSafe(ref)+"/"+docSafe(type)+".pdf";
+ const up=await sb.storage.from(DOC_BUCKET).upload(path,file,{upsert:true,contentType:file.type||"application/pdf"});
+ if(up.error)throw up.error;
+ const r=await sb.from("shipment_files").upsert({id,ref:String(ref),type,name:file.name,path,updated_at:new Date().toISOString()});
+ if(r.error)throw r.error;
+}
+async function getShipmentFile(ref,type,withBlob){
+ const r=await sb.from("shipment_files").select("*").eq("id",String(ref)+"::"+type).maybeSingle();
+ if(r.error)throw r.error; if(!r.data)return null;
+ const out={...r.data,mime:"application/pdf"};
+ if(withBlob){const d=await sb.storage.from(DOC_BUCKET).download(r.data.path);if(d.error)throw d.error;out.blob=d.data;}
+ return out;
+}
+async function deleteShipmentFiles(ref){
+ const r=await sb.from("shipment_files").select("id,path").eq("ref",String(ref));if(r.error)throw r.error;
+ if(r.data.length){await sb.storage.from(DOC_BUCKET).remove(r.data.map(x=>x.path));await sb.from("shipment_files").delete().eq("ref",String(ref));}
+}
+async function clearAllShipmentFiles(){
+ const r=await sb.from("shipment_files").select("id,path");if(r.error)throw r.error;
+ if(r.data.length){await sb.storage.from(DOC_BUCKET).remove(r.data.map(x=>x.path));await sb.from("shipment_files").delete().in("id",r.data.map(x=>x.id));}
+}
+
+function formSet(name,value){const el=document.querySelector('#bookingForm [name="'+CSS.escape(name)+'"]');if(el&&value&&!el.value)el.value=value;}
+function normalizeBookingDate(raw){if(!raw)return "";const monthDate=String(raw).trim().match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);if(monthDate){const months={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};const mm=months[monthDate[2].slice(0,3).toLowerCase()];if(mm)return `${monthDate[3]}-${String(mm).padStart(2,"0")}-${String(+monthDate[1]).padStart(2,"0")}`;}let v=String(raw).trim().replace(/[.]/g,"/").replace(/\s/g,"");let packed=v.match(/^(\d{2})(\d{2})\/(\d{4})$/);if(packed){let dd=+packed[1],mm=+packed[2],yy=+packed[3];if(dd>=1&&dd<=31&&mm>=1&&mm<=12)return `${yy}-${String(mm).padStart(2,"0")}-${String(dd).padStart(2,"0")}`;}let m=v.match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);if(m){let d=+m[1],mo=+m[2],y=+m[3];if(y>2400)y-=543;if(d>12&&mo<=12)return `${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`;if(mo>12&&d<=12)return `${y}-${String(d).padStart(2,"0")}-${String(mo).padStart(2,"0")}`;return `${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`;}m=v.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return `${m[1]}-${String(+m[2]).padStart(2,"0")}-${String(+m[3]).padStart(2,"0")}`;return "";}
+function parseBookingPDFText(text){
+const lines=text.split(/\n/).map(x=>x.replace(/[|]/g," ").replace(/\s+/g," ").trim()).filter(Boolean);
+const full=lines.join("\n"), out={};
+const clean=v=>String(v||"").replace(/^[:：\s]+/,"").replace(/\s{2,}/g," ").trim().replace(/[|]/g,"");
+const lineValue=(labels)=>{for(const label of labels){const re=new RegExp("^\\s*"+label.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\$&")+"\\s*[:：]?\\s*(.*?)\\s*$","i");for(const line of lines){const m=line.match(re);if(m&&m[1])return clean(m[1]);}}return "";};
+const after=(label)=>{const re=new RegExp("(?:^|\\n)\\s*"+label.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\$&")+"\\s*[:：]?\\s*([^\\n]*)","i");const m=full.match(re);return m?clean(m[1]):"";};
+const pick=(res)=>{for(const re of res){const m=full.match(re);if(m&&m[1])return clean(m[1]);}return "";};
+const rawDate=(v)=>{const m=String(v||"").match(/\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4}|\d{1,2}[./-]\d{1,2}[./-]\d{4}|\d{4}-\d{1,2}-\d{1,2}/);return m?normalizeBookingDate(m[0]):"";};
+const date=rawDate;
+const labelLine=(label)=>lines.find(x=>new RegExp("^\\s*"+label+"\\b","i").test(x))||"";
+const getDateTime=(label)=>{let v=after(label);if(!v){const l=labelLine(label);v=l;}let d=date(v),t=(v.match(/\b\d{1,2}[.:]\d{2}\b/)||[])[0]||"";if(!t){const idx=lines.findIndex(x=>new RegExp("^\\s*"+label+"\\b","i").test(x));if(idx>=0){for(const next of lines.slice(idx,Math.min(idx+3,lines.length))){const tm=next.match(/\b\d{1,2}[.:]\d{2}\b/);if(tm){t=tm[0].replace('.',':');break;}if(d&&date(next)&&date(next)!==d)break;}}}return {date:d,time:t.replace('.',':')};};
+const displayDateTime=(obj)=>{let d=obj?.date||"",t=(obj?.time||"").replace(".",":");if(d){const m=d.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m)d=`${m[3]}/${m[2]}/${m[1]}`;}return d?(t?`${d} @${t}`:d):t;};
+// Seabra Booking Confirmation mapping. Carrier Booking is the Booking Ref; Booking No. stays separate.
+out["Booking No."]=lineValue(["BOOKING NO\\."])||after("BOOKING NO\\.");
+out["Booking Ref"]=pick([/Carrier\s+Booking\s*[:：]?\s*([A-Z0-9-]{6,})/i,/Carrier\s+Booking\s*[:：]?\s*([A-Z0-9\s-]{6,})/i]).replace(/\s/g,"");
+out["Shipment No."]=lineValue(["SHIPMENT NO\\."])||after("SHIPMENT NO\\.");out["Quotation No."]=lineValue(["QUOTATION NO\\."])||after("QUOTATION NO\\.");
+out["Booking Date"]=date(lineValue(["DATE"])||after("DATE"));
+out["Customer"]=lineValue(["Shipper Name"])||after("Shipper Name")||lineValue(["TO"])||after("TO");out["Shipper"]=out["Customer"];
+out["Attention / PIC"]=lineValue(["ATTN"])||after("ATTN");out["Agent Name"]=lineValue(["Agent Name"])||after("Agent Name");out["Forwarding Agent"]=out["Agent Name"];
+out["Commodity"]=lineValue(["Commodity"])||after("Commodity");out["Class"]=lineValue(["Class"])||after("Class");out["UN No."]=lineValue(["UN"])||after("UN");out["Class / UN"]=[out["Class"],out["UN No."]].filter(Boolean).join(" / ");
+out["Quantity / Volume"]=lineValue(["Volume"])||after("Volume");{const carrierFromLabel=clean(lineValue(["Carrier Name","Carrier","Shipping Line"])||after("Carrier Name")||after("Carrier")||after("Shipping Line"));const knownCarrier=(full.match(/\b(SINOKOR|KMTC|SEABOARD|MAERSK|MSC|CMA CGM|HAPAG[- ]LLOYD|ONE|EVERGREEN|COSCO|OOCL|YANG MING|ZIM|PIL|WAN HAI|SITC|TS LINES|EMC|ESL)\b/i)||[])[1]||"";const candidate=carrierFromLabel||knownCarrier;out["Carrier"]=(candidate && !/^\d+[\s\-/]*$/.test(candidate) && !/booking|b\/?l|ref(?:erence)?|no\.?$/i.test(candidate) && /[A-Za-z]/.test(candidate))?candidate.toUpperCase():knownCarrier.toUpperCase();}out["Place of Receipt"]=lineValue(["Place of Receipt"])||after("Place of Receipt");
+out["Port of Loading (POL)"]=lineValue(["Port of Loading"])||after("Port of Loading");out["Place of Delivery (POD)"]=lineValue(["Destination","Place of Delivery"])||after("Destination")||after("Place of Delivery");
+const feederLine=lines.find(x=>/^Feeder\s+Name\b/i.test(x))||"";out["Feeder Name"]=clean((lineValue(["Feeder Name"])||after("Feeder Name")).replace(/\s+Voy\s*[:：]?.*$/i,""))||clean(feederLine.replace(/^Feeder\s+Name\s*[:：]?/i,"").replace(/\s+Voy\s*[:：]?.*$/i,""));out["Feeder Voyage"]=pick([/Feeder\s+Name[^\n]*?\bVoy\s*[:：]?\s*([A-Z0-9-]+)/i,/\bVoy\s*[:：]?\s*([A-Z0-9-]+)/i]);
+out["Voyage"]=out["Feeder Voyage"];out["Feeder Name / Voy."]=[out["Feeder Name"],out["Feeder Voyage"]].filter(Boolean).join(" / ");out["Feeder Vessel / Voy."]=out["Feeder Name / Voy."];
+out["Vessel Name"]=clean((lineValue(["Vessel Name"])||after("Vessel Name")).replace(/\s+Voy\s*[:：]?.*$/i,""));out["Vessel Voyage"]=pick([/Vessel\s+Name[^\n]*?\bVoy\s*[:：]?\s*([A-Z0-9-]+)/i]);out["Vessel Name / Voy."]=[out["Vessel Name"],out["Vessel Voyage"]].filter(Boolean).join(" / ");
+out["ETD-LCH"]=date(lineValue(["ETD"])||after("ETD"));out["ETA-DEST"]=date(lineValue(["ETA"])||after("ETA"));out["ETD"]=out["ETD-LCH"];out["ETA"]=out["ETA-DEST"];
+out["CFS Date"]=date(lineValue(["CFS Date"])||after("CFS Date"));
+const closing=getDateTime("Closing Time");out["Closing Time"]=displayDateTime({date:date(lineValue(["Closing Time"])||after("Closing Time"))||closing.date,time:closing.time||((full.match(/Closing\s+Time[^\n]*?\b(\d{1,2}[.:]\d{2})/i)||[])[1]||"").replace('.',':')});
+const cyLine=lines.find(x=>/^CY\s+Date\b/i.test(x))||"";out["CY Date"]=date(lineValue(["CY Date"])||after("CY Date"))||date(cyLine);out["CY Depot / Location"]=clean(cyLine.replace(/^CY\s+Date\s*[:：]?\s*/i,"").replace(/\d{1,2}\s+[A-Za-z]+\s+\d{4}|\d{1,2}[./-]\d{1,2}[./-]\d{4}/,""));out["CY Place / Date"]=[out["CY Date"],out["CY Depot / Location"]].filter(Boolean).join(" · ");
+const retLine=lines.find(x=>/^Return\s+Date\b/i.test(x))||"";out["Return Date"]=date(lineValue(["Return Date"])||after("Return Date"))||date(retLine);out["Return Depot / Location"]=clean(retLine.replace(/^Return\s+Date\s*[:：]?\s*/i,"").replace(/\d{1,2}\s+[A-Za-z]+\s+\d{4}|\d{1,2}[./-]\d{1,2}[./-]\d{4}/,""));out["Return Place / Date"]=[out["Return Date"],out["Return Depot / Location"]].filter(Boolean).join(" · ");
+const vgm=getDateTime("Closing VGM");out["VGM Closing"]=displayDateTime({date:vgm.date,time:vgm.time||pick([/Closing\s+VGM[^\n]*?\b(\d{1,2}[.:]\d{2})/i])});
+const si=getDateTime("Closing SI");out["Closing SI"]=displayDateTime({date:si.date,time:si.time||pick([/Closing\s+SI[^\n]*?\b(\d{1,2}[.:]\d{2})/i])});
+out["Paperless Ref."]=lineValue(["Paperless Code"])||after("Paperless Code");out["Paperless Code"]=out["Paperless Ref."];out["Remarks"]=lineValue(["Remark"])||after("Remark");out["Remark"]=out["Remarks"];
+Object.assign(out,{"To / Customer":out["Customer"],"Shipper Name":out["Shipper"],"Agent Name":out["Forwarding Agent"],"Carrier Booking No.":out["Booking Ref"],"Volume":out["Quantity / Volume"],"Destination (POD)":out["Place of Delivery (POD)"],"Feeder Name":out["Feeder Name"],"Feeder Voyage":out["Feeder Voyage"],"Vessel Name":out["Vessel Name"],"Vessel Voyage":out["Vessel Voyage"],"VGM Closing":out["VGM Closing"],"Closing SI":out["Closing SI"],"VGM Closing":out["VGM Closing"]});
+// Keep only fields supported by the Seabra booking form; omit unavailable and duplicate fields.
+Object.assign(out,{
+"Booking No.":out["Booking No."]||out["Booking Ref"]||"",
+"Customer":out["Customer"]||out["Shipper"]||"",
+"Attention / PIC":out["Attention / PIC"]||out["Attention"]||"",
+"Agent Name":out["Agent Name"]||out["Forwarding Agent"]||"",
+"Voyage":out["Voyage"]||out["Feeder Voyage"]||"",
+"Volume":out["Quantity / Volume"]||"",
+"Destination (POD)":out["Place of Delivery (POD)"]||"",
+"Closing SI":out["Closing SI"]||"",
+"VGM Closing":out["VGM Closing"]||"",
+"CY Depot / Location":out["CY Depot / Location"]||"",
+"Return Depot / Location":out["Return Depot / Location"]||"",
+"Paperless Code":out["Paperless Ref."]||"",
+"Remark":out["Remarks"]||""
+});
+for(const k of Object.keys(out))if(typeof out[k]==="string")out[k]=clean(out[k]);
+return out;
+}
+function setOcrStatus(msg,show=true){const el=document.getElementById("bookingOcrStatus");if(!el)return;el.textContent=msg;el.style.display=show?"block":"none";}
+async function extractPDFText(file){if(!window.pdfjsLib)throw new Error("ไม่สามารถโหลดเครื่องมืออ่าน PDF ได้ กรุณาเชื่อมต่ออินเทอร์เน็ต");pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let text="";for(let i=1;i<=pdf.numPages;i++){setOcrStatus(`กำลังอ่าน PDF หน้า ${i}/${pdf.numPages}...`);const page=await pdf.getPage(i);const content=await page.getTextContent();if(content.items?.length){const lines=[];for(const item of content.items){if(!item.str||!item.str.trim())continue;const y=Math.round(item.transform?.[5]||0);let line=lines.find(x=>Math.abs(x.y-y)<=3);if(!line){line={y,parts:[]};lines.push(line);}line.parts.push({x:item.transform?.[4]||0,text:item.str});}text+=lines.sort((a,b)=>b.y-a.y).map(line=>line.parts.sort((a,b)=>a.x-b.x).map(x=>x.text).join(" ")).join("\n")+"\n";}}
+if(text.trim().length<40){if(!window.Tesseract)throw new Error("PDF นี้เป็นภาพสแกน แต่โหลด OCR ไม่สำเร็จ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง");text="";const worker=await Tesseract.createWorker("eng");try{await worker.setParameters({tessedit_pageseg_mode:"4"});for(let i=1;i<=pdf.numPages;i++){setOcrStatus(`PDF เป็นภาพสแกน · กำลังอ่านด้วย OCR หน้า ${i}/${pdf.numPages}...`);const page=await pdf.getPage(i);const viewport=page.getViewport({scale:2.6});const canvas=document.createElement("canvas");canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;const result=await worker.recognize(canvas);text+=result.data.text+"\n";canvas.width=canvas.height=1;}}finally{await worker.terminate();}}
+return text;}
+async function importBookingPDF(event){const file=event.target.files?.[0];if(!file)return;if(activeOwner==="All"||!teamMembers.includes(activeOwner)){alert("กรุณาเลือกชื่อเจ้าของงานก่อนโยนไฟล์ Booking");event.target.value="";return;}try{setOcrStatus("กำลังเตรียมอ่าน Booking PDF...");const text=await extractPDFText(file);const parsed=parseBookingPDFText(text);if(!parsed["Booking No."]){setOcrStatus("อ่านไม่พบ Booking No. · กรุณาลอง PDF ที่ชัดขึ้นหรือกรอกเอง",true);alert("อ่านไฟล์แล้วแต่ไม่พบ Booking No. จึงยังไม่บันทึก เพื่อป้องกันข้อมูลผิด");return;}let existing=null;if(pdfUpdateTargetRef){existing=bookings.find(x=>String(x["Booking Ref"]||x["Booking No."]||"")===String(pdfUpdateTargetRef));}if(!existing){existing=bookings.find(x=>String(x["Booking No."]||x["Booking Ref"]||"").trim().toLowerCase()===String(parsed["Booking No."]).trim().toLowerCase());}if(existing&&!confirm(`พบ Booking No. ${parsed["Booking No."]} ที่มีอยู่แล้ว\nต้องการอัปเดตข้อมูล Shipment เดิมจาก PDF ใหม่หรือไม่?\nไฟล์เอกสาร HBL/MBL และ Booking Carrier จะคงไว้`)){pdfUpdateTargetRef=null;return;}pendingEditRef=existing?String(existing["Booking Ref"]||existing["Booking No."]):null;document.getElementById("bookingForm").reset();if(existing){Object.entries(existing).forEach(([k,v])=>{const el=document.querySelector('#bookingForm [name="'+CSS.escape(k)+'"]');if(el&&v!==undefined&&v!==null)el.value=v;});}Object.entries(parsed).forEach(([k,v])=>{const el=document.querySelector('#bookingForm [name="'+CSS.escape(k)+'"]');if(el&&v!==undefined&&v!==null&&String(v).trim()!=="")el.value=v;});pendingBookingPDF=file;document.getElementById("bookingModalTitle").textContent=existing?"อัปเดต Shipment จาก Booking PDF ใหม่":"ตรวจสอบข้อมูลที่อ่านจาก Booking PDF";document.getElementById("pdfImportNote").style.display="block";setOcrStatus(existing?`พบ Booking เดิม ${parsed["Booking No."]} · ตรวจสอบข้อมูลใหม่แล้วกดอัปเดต`:`อ่านไฟล์เสร็จแล้ว · พบ Booking No. ${parsed["Booking No."]} · ตรวจสอบแล้วกดบันทึก Shipment`,true);openModal();pdfUpdateTargetRef=null;}catch(err){console.error(err);setOcrStatus("อ่าน PDF ไม่สำเร็จ · สามารถกรอก Booking เองได้",true);alert("อ่าน Booking PDF ไม่สำเร็จ: "+(err.message||"กรุณาลองไฟล์ใหม่"));}finally{event.target.value="";}}
+function updateShipmentFromPDF(ref){const record=bookings.find(x=>String(x["Booking Ref"]||x["Booking No."])===String(ref));if(record&&teamMembers.includes(record["Job Owner"]))setOwner(record["Job Owner"]);pdfUpdateTargetRef=ref;const input=document.getElementById("bookingPdfInput");input.value="";input.click();}
+
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function fmtDate(v){if(!v)return "—";let d=new Date(v+"T00:00:00");return isNaN(d)?"—":d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"2-digit"});}
+function monthLabel(v){let d=new Date(v+"T00:00:00");return isNaN(d)?"ไม่ระบุ":d.toLocaleDateString("en-GB",{month:"short",year:"2-digit"});}
+function uniqueCustomers(){return [...new Set(bookings.map(b=>b["Shipper"]).filter(Boolean))].sort((a,b)=>a.localeCompare(b));}
+function recordsForCustomer(name){return bookings.filter(b=>b["Shipper"]===name);}
+function initials(s){return (s||"?").split(/[\s,.-]+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();}
+function dataBadge(type){let c=type==="ข้อมูลจริงจากเอกสาร"?"green":type==="เพิ่มโดยผู้ใช้"?"blue":"amber";return `<span class="status ${c}">${esc(type||"ไม่ระบุ")}</span>`;}
+
+const TRACKER_KEY="exportPulseShipmentStatusTrackerV1";
+const trackerSampleData=[];  // sample data removed for deployment
+let trackerRecords=[];  // filled from Supabase table tracker
+function persistTracker(){cloudSchedule("tracker");}
+
+function trackerStatusClass(status){return status==="CONFIRM"?"confirm":status==="CANCEL"?"cancel":"pending";}
+function renderTracker(){
+ const body=document.getElementById("trackerRows");if(!body)return;
+ const q=(document.getElementById("trackerSearch")?.value||"").toLowerCase().trim(),filter=document.getElementById("trackerStatusFilter")?.value||"";
+ const rows=trackerRecords.filter(x=>(!activeOwner||activeOwner==="All"||x.owner===activeOwner)&&(!filter||x.status===filter)&&(!q||[x.agent,x.shipper].join(" ").toLowerCase().includes(q)));
+ document.getElementById("trackerCount").textContent=rows.length+" รายการ";
+ body.innerHTML=rows.map(x=>`<tr><td><input type="checkbox" class="tracker-row-check" value="${esc(x.id)}" aria-label="เลือกรายการ"></td><td class="tracker-subject">${esc(x.agent||"—")}</td><td class="tracker-subject">${esc(x.shipper||"—")}</td><td><span class="tracker-status ${trackerStatusClass(x.status)}">${esc(x.status||"PENDING")}</span></td><td class="tracker-remark">${esc(x.remark||"—")}</td><td><button class="btn" onclick="openTrackerForm('${esc(x.id)}')">Edit</button></td></tr>`).join("")||'<tr><td colspan="6" class="empty">ไม่พบรายการ กรุณาเลือก Name หรือเพิ่มรายการใหม่</td></tr>';
+ const all=document.getElementById("trackerSelectAll");if(all)all.checked=false;
+}
+
+function toggleAllTrackerRows(checked){
+ document.querySelectorAll(".tracker-row-check").forEach(el=>el.checked=checked);
+}
+function deleteSelectedTrackerRecords(){
+ const selected=[...document.querySelectorAll(".tracker-row-check:checked")].map(el=>el.value);
+ if(!selected.length){alert("กรุณาเลือกรายการที่ต้องการลบก่อน");return;}
+ if(!confirm(`ต้องการลบ ${selected.length} รายการที่เลือกใช่หรือไม่? การลบไม่สามารถย้อนกลับได้`))return;
+ trackerRecords=trackerRecords.filter(x=>!selected.includes(x.id));
+ persistTracker();renderTracker();
+}
+function openTrackerForm(id){
+ const r=trackerRecords.find(x=>x.id===id);
+ document.getElementById("trackerFormTitle").textContent=r?"Edit Booking Status":"Add Booking Status";
+ document.getElementById("trackerEditId").value=r?.id||"";
+ document.getElementById("trackerAgent").value=r?.agent||"";
+ document.getElementById("trackerShipper").value=r?.shipper||"";
+ document.getElementById("trackerRemark").value=r?.remark||"";
+ const status=["CONFIRM","PENDING","CANCEL"].includes(r?.status)?r.status:"PENDING";
+ document.querySelectorAll('input[name="trackerStatusChoice"]').forEach(el=>el.checked=el.value===status);
+ document.getElementById("trackerModal").classList.add("show");
+}
+function closeTrackerForm(){document.getElementById("trackerModal").classList.remove("show");}
+function saveTrackerForm(e){
+ e.preventDefault();const id=document.getElementById("trackerEditId").value;
+ const selected=document.querySelector('input[name="trackerStatusChoice"]:checked');
+ const obj={id:id||"tracker-"+Date.now()+"-"+Math.random().toString(36).slice(2,7),
+ agent:document.getElementById("trackerAgent").value.trim(),
+ shipper:document.getElementById("trackerShipper").value.trim(),
+ remark:document.getElementById("trackerRemark").value.trim(),
+ owner:trackerRecords.find(x=>x.id===id)?.owner||activeOwner,
+ status:selected?.value||"PENDING"};
+ if(!obj.owner||obj.owner==="All"){alert("กรุณาเลือกชื่อสมาชิกก่อนเพิ่มรายการ");return;}
+ const i=trackerRecords.findIndex(x=>x.id===id);if(i>=0)trackerRecords[i]=obj;else trackerRecords.unshift(obj);
+ persistTracker();closeTrackerForm();renderTracker();
+}
+
+function navigate(page){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById("page-"+page).classList.add("active");document.querySelectorAll(".nav-btn").forEach(x=>x.classList.toggle("active",x.dataset.page===page));const titles={dashboard:["ภาพรวม Shipment","ติดตามงาน Booking และกำหนดการโหลดของทีม CS Export"],calendar:["ปฏิทินวันโหลด","ตรวจสอบวันที่รับตู้และรายละเอียด Booking"],bookings:["ฐานข้อมูล Booking","ค้นหาและจัดการข้อมูลตามเจ้าของงาน"],tracker:["SHIPMENT STATUS","ติดตามสถานะงานและ Remark ของทีม"]};document.getElementById("pageTitle").textContent=titles[page][0];document.getElementById("pageSub").textContent=titles[page][1];if(page==="dashboard")renderDashboard();if(page==="calendar")renderCalendar();if(page==="bookings")renderBookings();if(page==="tracker")renderTracker();}
+document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.page)));
+function countUniqueShipments(rows){
+  const seen=new Set();
+  let anonymous=0;
+  (Array.isArray(rows)?rows:[]).forEach(b=>{
+    const key=String((b&& (b["Job No."]||b["JOB NUMBER"]||b["Job Number"]||b["Booking No."]||b["Booking Ref"]||b["Carrier Booking No."]))||"").trim().toLowerCase();
+    if(key){seen.add(key);}else{anonymous++;}
+  });
+  return seen.size+anonymous;
+}
+function renderKPIs(){const bookings=visibleBookings();const todayStr=today.toISOString().slice(0,10);const weekEnd=new Date(today);weekEnd.setDate(weekEnd.getDate()+7);const cy=b=>String(b["CY Date"]||"").trim()||normalizeBookingDate(b["CY Place / Date"]||"");const week=bookings.filter(b=>cy(b)&&cy(b)>=todayStr&&cy(b)<weekEnd.toISOString().slice(0,10)).length;const upcoming=bookings.filter(b=>cy(b)&&cy(b)>=todayStr).length;const items=[["Booking ทั้งหมด",bookings.length,"รายการในฐานข้อมูล","▤"],["งานโหลดสัปดาห์นี้",week,"รายการตาม CY Date","◷"],["งานโหลดที่กำลังจะมาถึง",upcoming,"รายการที่มีวันที่รับตู้ในอนาคต","⌖"]];document.getElementById("kpiRow").innerHTML=items.map(x=>`<div class="kpi"><div class="kpi-top"><span>${x[0]}</span><span class="kpi-icon">${x[3]}</span></div><div class="kpi-value">${x[1]}</div><div class="kpi-foot">${x[2]}</div></div>`).join("");}
+
+const shipperChartPalette=["#80AEE8","#F4A6B8","#8BC9B5","#F6C18A","#B9A3E3","#A9C4E8","#E9A3D1","#B9D69A","#F0D58A","#8ECFD3","#D9B49C","#AEB8E8","#F2B6A0","#C5D9A7","#C7B0D8","#9FC7D9","#E7C1C8","#C6D3A6","#B5ADE0","#F3D1A8","#A5D6C8","#D6B6A8","#B5C8F0","#E6A9A0"];
+function setMonthlyChartMonth(value){
+ monthlyChartSelectedMonth=String(Math.max(0,Math.min(11,Number(value)||0)));
+ const chartMonth=document.getElementById("monthlyChartMonthSelect");if(chartMonth)chartMonth.value=monthlyChartSelectedMonth;
+ renderMonthlyShipperChart();renderMonthlyBookingCount();
+}
+function toggleMonthlyChartView(){monthlyChartView=monthlyChartView==="year"?"month":"year";renderMonthlyShipperChart();}
+function renderMonthlyShipperChart(){
+ const yearSelect=document.getElementById("shipmentYearSelect");if(!yearSelect)return;
+ const years=[...new Set(bookings.map(b=>{const v=b["ETD-LCH"]||b["ETD"];if(!v)return "";const d=new Date(v+"T00:00:00");return Number.isNaN(d.getTime())?"":String(d.getFullYear());}).filter(Boolean))].sort((a,b)=>Number(b)-Number(a));
+ const current=String(new Date().getFullYear());const options=[...new Set([...years,current])].sort((a,b)=>Number(b)-Number(a));const previous=yearSelect.value;
+ yearSelect.innerHTML=options.map(y=>`<option value="${y}">${Number(y)+543} (${y})</option>`).join("");
+ yearSelect.value=options.includes(previous)?previous:(options.includes(current)?current:(options[0]||current));
+ const selectedYear=yearSelect.value;const months=Array.from({length:12},(_,i)=>new Date(Number(selectedYear),i,1).toLocaleDateString("en-US",{month:"short"}));
+ const monthSelect=document.getElementById("monthlyChartMonthSelect");if(monthSelect){const old=monthSelect.value;monthSelect.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");if(old!==""&&Number(old)>=0&&Number(old)<12)monthlyChartSelectedMonth=old;monthSelect.value=monthlyChartSelectedMonth;}
+ const filtered=bookings.filter(b=>{const v=b["ETD-LCH"]||b["ETD"];if(!v)return false;const d=new Date(v+"T00:00:00");return !Number.isNaN(d.getTime())&&d.getFullYear()===Number(selectedYear);});
+ const shipperNames=[...new Set(filtered.map(b=>(b["Shipper"]||b["Customer"]||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"th"));
+ const selectedMonth=Number(monthlyChartSelectedMonth);const monthRecords=filtered.filter(b=>{const v=b["ETD-LCH"]||b["ETD"];const d=new Date(v+"T00:00:00");return d.getMonth()===selectedMonth;});
+ const monthCounts=new Map();monthRecords.forEach((b,i)=>{const name=(b["Shipper"]||b["Customer"]||"ไม่ระบุ Shipper").trim()||"ไม่ระบุ Shipper";const key=String(b["Booking Ref"]||b["Booking No."]||b["Job No."]||b["JOB NUMBER"]||`row-${i}`).trim();if(!monthCounts.has(name))monthCounts.set(name,new Set());monthCounts.get(name).add(key);});
+ const detailRows=[...monthCounts.entries()].map(([name,keys])=>({name,count:keys.size})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));
+ const isMonth=monthlyChartView==="month";
+ const datasets=isMonth?[{label:"Shipment",data:detailRows.map(x=>x.count),backgroundColor:detailRows.map((_,i)=>shipperChartPalette[i%shipperChartPalette.length]),borderWidth:0,borderRadius:4,maxBarThickness:30}]:shipperNames.map((name,i)=>({label:name,data:Array.from({length:12},(_,m)=>filtered.filter(b=>{const v=b["ETD-LCH"]||b["ETD"];const d=new Date(v+"T00:00:00");return (b["Shipper"]||b["Customer"]||"").trim()===name&&d.getMonth()===m;}).length),backgroundColor:shipperChartPalette[i%shipperChartPalette.length],borderWidth:0,borderRadius:3,stack:"shipments",maxBarThickness:48}));
+ const subtitle=document.getElementById("monthlyChartSubtitle");if(subtitle)subtitle.textContent=isMonth?`${months[selectedMonth]} ${Number(selectedYear)+543} · Shipper ที่มี Shipment และจำนวนของแต่ละราย`:`ภาพรวมครบ 12 เดือน · คลิกแท่งของเดือนที่ต้องการเพื่อดู Shipper รายบริษัท`;
+ const viewButton=document.getElementById("monthlyChartViewButton");if(viewButton)viewButton.textContent=isMonth?"กลับภาพรวมรายปี":"ดูรายเดือน";
+ if(monthlyChart)monthlyChart.destroy();
+ if(window.Chart){
+  const chartOptions={responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{display:!isMonth,position:"bottom",labels:{boxWidth:10,boxHeight:10,usePointStyle:true,padding:12,font:{family:"IBM Plex Sans Thai",size:10}}},tooltip:{callbacks:{footer:(items)=>isMonth?"รวม: "+items.reduce((sum,x)=>sum+x.parsed.x,0)+" Shipment":"รวมทั้งเดือน: "+items.reduce((sum,x)=>sum+x.parsed.y,0)+" Shipment"}}},scales:isMonth?{x:{beginAtZero:true,ticks:{precision:0},grid:{color:"#DCE6EF"},title:{display:true,text:"จำนวน Shipment"}},y:{grid:{display:false},ticks:{font:{family:"IBM Plex Sans Thai",size:10}}}}:{x:{stacked:true,grid:{display:false},ticks:{font:{family:"IBM Plex Sans Thai"}}},y:{stacked:true,beginAtZero:true,ticks:{precision:0},grid:{color:"#DCE6EF"},title:{display:true,text:"จำนวน Shipment"}}},onClick:(event,active)=>{if(!isMonth&&active&&active.length){setMonthlyChartMonth(active[0].index);monthlyChartView="month";renderMonthlyShipperChart();}}};
+  monthlyChart=new Chart(document.getElementById("monthlyChart"),{type:"bar",data:{labels:isMonth?detailRows.map(x=>x.name):months,datasets},options:isMonth?{...chartOptions,indexAxis:"y"}:chartOptions});
+ }
+ // กราฟ Top 5 Shipper ที่มีจำนวน Shipment สูงสุดในปีที่เลือก (อ้างอิง ETD และ Booking/Job)
+ const activeCanvas=document.getElementById("shipperActiveMonthsChart");
+ if(shipperActiveMonthsChart)shipperActiveMonthsChart.destroy();
+ const rankedShippers=shipperNames.map(name=>{
+   const rows=filtered.filter(b=>(b["Shipper"]||b["Customer"]||"").trim()===name);
+   return {name,count:countUniqueShipments(rows)};
+ }).filter(x=>x.count>0).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));
+ // จัดอันดับแบบมีอันดับร่วม: ถ้าจำนวน Shipment เท่ากันให้ได้อันดับเดียวกัน และแสดงทุกรายที่อยู่ใน Top 5 rank
+ let previousCount=null,currentRank=0;
+ const withRanks=rankedShippers.map((x,i)=>{if(x.count!==previousCount){currentRank=i+1;previousCount=x.count;}return {...x,rank:currentRank};});
+ const topShippers=withRanks.filter(x=>x.rank<=5);
+ const topChartWrap=activeCanvas?.closest('.chart-wrap');if(topChartWrap)topChartWrap.style.height=Math.max(260,topShippers.length*44+40)+'px';
+ const rankColors={1:'#80AEE8',2:'#F3A6B8',3:'#8BCBB8',4:'#F7C28B',5:'#B9A3E5'};
+ if(window.Chart&&activeCanvas){shipperActiveMonthsChart=new Chart(activeCanvas,{type:"bar",data:{labels:topShippers.map(x=>`${x.rank}. ${x.name}`),datasets:[{label:"จำนวน Shipment",data:topShippers.map(x=>x.count),backgroundColor:topShippers.map(x=>rankColors[x.rank]||'#C8D8E8'),borderWidth:0,borderRadius:5,maxBarThickness:32}]},options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,interaction:{mode:"nearest",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:(item)=>"จำนวน Shipment "+item.parsed.x, title:(items)=>{const x=topShippers[items[0]?.dataIndex];return x?`อันดับ ${x.rank} · ${x.name}`:'';}}}},scales:{x:{beginAtZero:true,ticks:{stepSize:1,precision:0},grid:{color:"#DCE6EF"},title:{display:true,text:"จำนวน Shipment"}},y:{grid:{display:false},ticks:{font:{family:"IBM Plex Sans Thai",size:10}}}}}});}
+ document.getElementById("shipperActiveMonthsNote").textContent=topShippers.length?`ปี ${Number(selectedYear)+543} · แสดงอันดับ 1–5 รวม Shipper ที่ได้อันดับร่วมกัน (${topShippers.length} ราย) เรียงตามจำนวน Shipment โดยอ้างอิง ETD และนับ Booking/Job ไม่ซ้ำ`:`ยังไม่มีข้อมูล ETD สำหรับปี ${Number(selectedYear)+543}`;
+ const monthTotals=months.map((_,m)=>countUniqueShipments(filtered.filter(b=>{const v=b["ETD-LCH"]||b["ETD"];return new Date(v+"T00:00:00").getMonth()===m;})));const max=Math.max(0,...monthTotals);const peakIndexes=monthTotals.map((n,i)=>({n,i})).filter(x=>x.n===max&&max>0).map(x=>x.i);const peakMonths=peakIndexes.map(i=>months[i]);const peakShippers=shipperNames.map(name=>({name,count:countUniqueShipments(filtered.filter(b=>peakIndexes.includes(new Date((b["ETD-LCH"]||b["ETD"])+"T00:00:00").getMonth())&&(b["Shipper"]||b["Customer"]||"").trim()===name))})).filter(x=>x.count>0).sort((a,b)=>b.count-a.count);const peakMax=Math.max(0,...peakShippers.map(x=>x.count));const peakLeaders=peakShippers.filter(x=>x.count===peakMax).map(x=>x.name);
+ document.getElementById("monthlyChartNote").textContent=isMonth?`${months[selectedMonth]} ${Number(selectedYear)+543} · ${countUniqueShipments(monthRecords)} Shipment จาก ${detailRows.length} Shipper · คลิก “กลับภาพรวมรายปี” เพื่อดูครบ 12 เดือน`:filtered.length?`ปี ${Number(selectedYear)+543} · เดือนพีคตาม ETD: ${peakMonths.join(", ")} (${max} Shipment) · Shipper ที่มี Shipment มากที่สุดในเดือนพีค: ${peakLeaders.join(", ")||"—"} (${peakMax})`:`ยังไม่มีข้อมูล ETD สำหรับปี ${Number(selectedYear)+543}`;
+}
+function renderMonthlyBookingCount(){
+ const bookings=visibleBookings();
+ const yearSelect=document.getElementById("shipmentYearSelect");const year=Number(yearSelect?.value||new Date().getFullYear());
+ const month=Math.max(0,Math.min(11,Number(monthlyChartSelectedMonth)||0));
+ const monthNames=Array.from({length:12},(_,i)=>new Date(year,i,1).toLocaleDateString("en-US",{month:"long"}));
+ const records=bookings.filter(b=>{const raw=String(b["ETD-LCH"]||b["ETD"]||"").trim();if(!raw)return false;const d=new Date(raw+"T00:00:00");return !Number.isNaN(d.getTime())&&d.getFullYear()===year&&d.getMonth()===month;});
+ const unique=new Map();records.forEach((b,i)=>{const key=String(b["Booking Ref"]||b["Booking No."]||b["Job No."]||b["JOB NUMBER"]||`row-${i}`).trim();if(key&&!unique.has(key))unique.set(key,b);});
+ document.getElementById("selectedMonthShipmentCount").textContent=unique.size.toLocaleString("en-US");
+ document.getElementById("selectedMonthLabel").textContent=`${monthNames[month]} ${year+543} · นับจาก Booking ที่มี ETD ในเดือนนี้`;
+ const counts={};unique.forEach(b=>{const name=String(b["Shipper"]||b["Customer"]||"ไม่ระบุ Shipper").trim()||"ไม่ระบุ Shipper";counts[name]=(counts[name]||0)+1;});
+ const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],"th"));
+ const palette=shipperChartPalette;
+ const pieCanvas=document.getElementById("monthlyBookingPieChart");
+ if(monthlyBookingPieChart){monthlyBookingPieChart.destroy();monthlyBookingPieChart=null;}
+ if(window.Chart&&pieCanvas&&sorted.length){
+   const pieItems=sorted.slice(0,12);const extraCount=sorted.slice(12).reduce((sum,item)=>sum+item[1],0);
+   const pieLabels=pieItems.map(x=>x[0]);const pieValues=pieItems.map(x=>x[1]);
+   if(extraCount>0){pieLabels.push("Shipper อื่น ๆ");pieValues.push(extraCount);}
+   const pieColors=pieValues.map((_,i)=>palette[i%palette.length]);
+   monthlyBookingPieChart=new Chart(pieCanvas,{type:"doughnut",data:{labels:pieLabels,datasets:[{data:pieValues,backgroundColor:pieColors,borderColor:"#FFFFFF",borderWidth:3,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:"48%",plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>`${ctx.label}: ${ctx.parsed} Shipment`}}}}});
+ }
+ document.getElementById("selectedMonthShipperBreakdown").innerHTML=sorted.length?sorted.map(([name,count],i)=>`<div class="legend-item"><span class="legend-label" style="min-width:0"><i class="dot" style="width:9px;height:9px;background:${palette[i%palette.length]};flex-shrink:0"></i><span style="overflow-wrap:anywhere">${esc(name)}</span></span><strong>${count}</strong></div>`).join(""):`<div class="empty">ไม่มี Booking ที่มี ETD ในเดือนนี้</div>`;
+}
+let teamPerformanceChart = null;
+function renderDashboard(){
+  const rows=visibleBookings();
+  const dates=rows.map(bookingCYDate).filter(Boolean);
+  const years=[...new Set(dates.map(d=>d.slice(0,4)))].sort();
+  const currentYear=String(new Date().getFullYear());
+  const yearOptions=[...new Set([...years,currentYear])].sort();
+  const yearSel=document.getElementById("dashYearSelect");
+  const tableYear=document.getElementById("dashTableYear");
+  const previousYear=yearSel?.value||currentYear;
+  const previousTableYear=tableYear?.value||currentYear;
+  if(yearSel){yearSel.innerHTML=yearOptions.map(y=>`<option value="${y}">${y}</option>`).join("");yearSel.value=yearOptions.includes(previousYear)?previousYear:currentYear;}
+  if(tableYear){tableYear.innerHTML=yearOptions.map(y=>`<option value="${y}">${y}</option>`).join("");tableYear.value=yearOptions.includes(previousTableYear)?previousTableYear:currentYear;}
+  const ownerName=activeOwner||"Select a Profile";
+  document.getElementById("dashOwnerName").textContent=ownerName;
+  document.getElementById("dashOwnerSub").textContent=activeOwner?`Personal Booking Overview`:"Choose a name to view bookings";
+  document.getElementById("dashTotalShipments").textContent=rows.length;
+  const todayKey=today.toISOString().slice(0,10);
+  const upcomingRows=rows.filter(b=>bookingCYDate(b)&&bookingCYDate(b)>=todayKey);
+  const confirmedRows=rows.filter(b=>String(b["Shipment Status"]||"").toLowerCase()==="booking confirmed");
+  const pendingRows=rows.filter(b=>!b["Shipment Status"]||String(b["Shipment Status"]).toLowerCase()==="booking pending");
+  const setText=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+  setText("overviewTotal",rows.length);
+  setText("overviewUpcoming",upcomingRows.length);
+  setText("overviewConfirmed",confirmedRows.length);
+  setText("overviewPending",pendingRows.length);
+
+  const past=rows.filter(b=>bookingCYDate(b)&&bookingCYDate(b)<today.toISOString().slice(0,10)).length;
+  document.getElementById("dashPastLoads").textContent=past;
+  const upcoming=rows.filter(b=>bookingCYDate(b)&&bookingCYDate(b)>=today.toISOString().slice(0,10)).length;
+  document.getElementById("dashUpcomingLoads").textContent=upcoming;
+  document.getElementById("dashUpcomingFoot").textContent=`${rows.filter(b=>bookingCYDate(b)&&bookingCYDate(b)===today.toISOString().slice(0,10)).length} loads today · CY Date`;
+
+  const countDeadline=(type)=>rows.filter(b=>{
+    const raw=type==="Closing SI"?(b["Closing SI"]||b["Closing Time"]):(b["VGM Closing"]||b["Closing VGM Time"]||b["VGM Closing Date"]);
+    const d=normalizeBookingDate(raw);if(!d)return false;
+    const diff=Math.round((new Date(d+"T00:00:00")-today)/86400000);
+    return diff>=0&&diff<=3;
+  }).length;
+  setText("overviewSICount",countDeadline("Closing SI")+" รายการ");
+  setText("overviewVGMCount",countDeadline("VGM Closing")+" รายการ");
+  const missing=rows.filter(b=>!bookingCYDate(b)).length;
+  document.getElementById("dashMissingDate").textContent=missing;
+
+  const yr=Number(yearSel?.value||currentYear);
+  const counts=Array(12).fill(0);
+  rows.forEach(b=>{const d=bookingCYDate(b);if(d&&Number(d.slice(0,4))===yr)counts[Number(d.slice(5,7))-1]++;});
+  const canvas=document.getElementById("teamPerformanceChart");
+  if(teamPerformanceChart){teamPerformanceChart.destroy();teamPerformanceChart=null;}
+  if(window.Chart&&canvas){
+    teamPerformanceChart=new Chart(canvas,{type:"bar",data:{labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],datasets:[{data:counts,backgroundColor:"#5c91b5",borderRadius:2,maxBarThickness:16}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} Shipments`}}},scales:{x:{display:false,grid:{display:false}},y:{beginAtZero:true,ticks:{precision:0,font:{size:8}},grid:{color:"#e8edf1"}}}}});
+  }
+  const monthSel=document.getElementById("dashTableMonth");
+  if(monthSel&&monthSel.options.length===1){const names=["January","February","March","April","May","June","July","August","September","October","November","December"];monthSel.innerHTML='<option value="all">All</option>'+names.map((n,i)=>`<option value="${String(i+1).padStart(2,"0")}">${n}</option>`).join("");}
+  const ownerSel=document.getElementById("dashTableOwner");if(ownerSel)ownerSel.value="active";
+  renderTeamDashboardTable();
+}
+function renderTeamDashboardTable(){
+  const rows=visibleBookings();
+  const yr=document.getElementById("dashTableYear")?.value||String(new Date().getFullYear());
+  const mo=document.getElementById("dashTableMonth")?.value||"all";
+  const ownerMode=document.getElementById("dashTableOwner")?.value||"active";
+  const filtered=rows.filter(b=>{
+    const d=bookingCYDate(b);
+    if(d&&d.slice(0,4)!==yr)return false;
+    if(!d)return false;
+    if(mo!=="all"&&d.slice(5,7)!==mo)return false;
+    return true;
+  }).filter(b=>ownerMode==="active"||ownerMode==="ทั้งหมด"||String(b["Job Owner"]||"").trim()===ownerMode)
+   .sort((a,b)=>bookingCYDate(b).localeCompare(bookingCYDate(a)));
+  document.getElementById("dashFoundCount").textContent=`${filtered.length} shipments found`;
+  document.getElementById("dashShipmentRows").innerHTML=filtered.map(b=>`<tr onclick="openDetail('${esc(b["Booking Ref"]||b["Booking No."])}')"><td>${esc(b["Booking No."]||b["Booking Ref"]||"—")}</td><td>${fmtDate(bookingCYDate(b))}</td><td>${esc(b["Job Owner"]||"—")}</td><td>${esc(b["Port of Loading (POL)"]||"—")}</td><td>${esc(b["Destination (POD)"]||b["Place of Delivery (POD)"]||"—")}</td><td>${esc(b["Customer"]||b["Shipper"]||"—")}</td><td>${esc(b["Volume"]||b["Quantity / Volume"]||"—")}</td><td>${fmtDate(b["ETD"]||b["ETD-LCH"])}</td><td><span class="status-pill ${shipmentStatusClass(b["Shipment Status"]||"Booking Pending")}">${esc(b["Shipment Status"]||"Booking Pending")}</span></td></tr>`).join("")||`<tr><td colspan="9" class="empty">No shipments found for this selection</td></tr>`;
+}
+function renderBookings(){const bookings=visibleBookings();const search=(document.getElementById("bookingSearch")?.value||"").toLowerCase();const dest=document.getElementById("destFilter")?.value||"";const typ=document.getElementById("dataFilter")?.value||"";const allD=[...new Set(bookings.map(b=>b["Place of Delivery (POD)"]).filter(Boolean))].sort();const sel=document.getElementById("destFilter");if(sel){const old=sel.value;sel.innerHTML='<option value="">ทุกปลายทาง</option>'+allD.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("");sel.value=allD.includes(old)?old:"";}const rows=bookings.filter(b=>(!search||["Booking Ref","Booking No.","Shipper","Customer","Commodity","Place of Delivery (POD)","Job Owner"].some(k=>String(b[k]||"").toLowerCase().includes(search)))&&(!dest||b["Place of Delivery (POD)"]===dest)&&(!typ||b._dataType===typ));document.getElementById("bookingRows").innerHTML=rows.map(b=>`<tr><td><a href="#" onclick="openDetail('${esc(b["Booking Ref"]||b["Booking No."])}');return false" style="color:#376FA5;font-weight:600;text-decoration:none">${esc(b["Booking No."]||b["Booking Ref"])}</a></td><td><div class="customer-name">${esc(b["Customer"]||b["Shipper"]||"—")}</div><div class="customer-sub">${esc(b["Agent Name"]||b["Forwarding Agent"]||"")}</div></td><td>${esc(b["Commodity"]||"—")}</td><td>${esc(b["Volume"]||b["Quantity / Volume"]||"—")}</td><td>${esc(b["Destination (POD)"]||b["Place of Delivery (POD)"]||"—")}</td><td>${fmtDate(b["ETD"]||b["ETD-LCH"])}</td><td>${fmtDate(b["CY Date"])}</td><td><span class="owner-tag">${esc(b["Job Owner"]||"ไม่ระบุ")}</span></td><td>${dataBadge(b._dataType)}</td><td style="display:flex;gap:5px"><button class="btn" style="padding:5px 8px" onclick="openDetail(this.dataset.ref)" data-ref="${esc(b["Booking Ref"]||b["Booking No."])}">ดู</button><button class="btn" style="padding:5px 8px;color:#5B0015" title="ลบรายการนี้" onclick="deleteBookingByRef(this)" data-ref="${esc(b["Booking Ref"]||b["Booking No."])}">ลบ</button></td></tr>`).join("")||`<tr><td colspan="10" class="empty">ไม่พบรายการที่ตรงกับการค้นหา</td></tr>`;document.getElementById("bookingCount").textContent=`แสดง ${rows.length} จาก ${bookings.length} รายการ · เจ้าของงาน: ${activeOwner}`;}
+function bookingCYDate(b){const raw=String(b?.["CY Date"]||b?.["CY Place / Date"]||b?.["CY / Pickup Date"]||"").trim();return normalizeBookingDate(raw)||"";}
+function calendarBookingsForView(){
+ const mode=document.getElementById("calendarOwnerFilter")?.value||"active";
+ if(mode==="All")return bookings.slice();
+ if(mode==="active")return visibleBookings();
+ return bookings.filter(b=>String(b["Job Owner"]||b["Owner"]||"").trim()===mode);
+}
+function populateCalendarOwnerFilter(){
+ const sel=document.getElementById("calendarOwnerFilter");if(!sel)return;
+ const previous=sel.value||"active";
+ const names=[...new Set([...(teamMembers||[]),...bookings.map(b=>String(b["Job Owner"]||b["Owner"]||"").trim()).filter(Boolean)])];
+ sel.innerHTML='<option value="active">ตามชื่อที่เลือกด้านบน</option><option value="All">All — Team Performance</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
+ sel.value=[...sel.options].some(o=>o.value===previous)?previous:"active";
+}
+function goCalendarToday(){
+ const d=new Date();calendarCursor=new Date(d.getFullYear(),d.getMonth(),1);
+ selectedCalendarDate=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+ renderCalendar();
+}
+function changeCalendarMonth(delta){
+ calendarCursor.setMonth(calendarCursor.getMonth()+delta);
+ const selected=new Date(selectedCalendarDate+"T00:00:00");
+ if(Number.isNaN(selected.getTime())||selected.getFullYear()!==calendarCursor.getFullYear()||selected.getMonth()!==calendarCursor.getMonth()){
+  selectedCalendarDate=`${calendarCursor.getFullYear()}-${String(calendarCursor.getMonth()+1).padStart(2,"0")}-01`;
+ }
+ renderCalendar();
+}
+function calendarEventDate(raw){
+ if(!raw)return "";
+ return normalizeBookingDate(String(raw).trim());
+}
+function calendarEventTime(raw){
+ const m=String(raw||"").match(/(?:@|\s)(\d{1,2}:\d{2})(?:\s|$)/);
+ return m?m[1]:"";
+}
+function calendarEventsForBooking(b){
+ const events=[];
+ const cy=calendarEventDate(b["CY Date"]||b["CY Place / Date"]||b["CY / Pickup Date"]);
+ if(cy)events.push({date:cy,type:"CY",time:"",label:"Loading"});
+ const siRaw=b["Closing SI"]||b["SI Closing Date"]||b["Closing SI Date"]||"";
+ const si=calendarEventDate(siRaw);
+ if(si)events.push({date:si,type:"SI",time:calendarEventTime(siRaw),label:"Closing SI"});
+ const vgmRaw=b["VGM Closing Date"]||b["VGM Closing"]||b["Closing VGM Date"]||"";
+ const vgm=calendarEventDate(vgmRaw);
+ if(vgm)events.push({date:vgm,type:"VGM",time:calendarEventTime(vgmRaw)||String(b["Closing VGM Time"]||"").trim(),label:"Closing VGM"});
+ return events;
+}
+function calendarEventsForDate(rows,date){
+ return rows.flatMap(b=>calendarEventsForBooking(b).filter(e=>e.date===date).map(e=>({...e,booking:b})));
+}
+function calendarEventFilterType(){return document.getElementById("calendarEventFilter")?.value||"ALL";}
+function eventsForCalendarView(rows,date){
+ const type=calendarEventFilterType();
+ return calendarEventsForDate(rows,date).filter(e=>type==="ALL"||e.type===type);
+}
+function renderCalendar(){
+ const root=document.getElementById("loadingCalendar");if(!root)return;
+ populateCalendarOwnerFilter();
+ const rowsForView=calendarBookingsForView();
+ const y=calendarCursor.getFullYear(),m=calendarCursor.getMonth();
+ const monthName=calendarCursor.toLocaleDateString("en-US",{month:"long"}).toUpperCase();
+ document.getElementById("calendarMonthLabel").textContent=`${monthName} · ${y}`;
+ const todayKey=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+ const first=new Date(y,m,1),start=new Date(y,m,1-first.getDay());
+ const heads=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+ const headHtml=heads.map(x=>`<div class="calendar-weekday">${x}</div>`).join("");let cells="";
+ for(let i=0;i<42;i++){
+  const d=new Date(start);d.setDate(start.getDate()+i);
+  const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  const events=eventsForCalendarView(rowsForView,key);
+  const labels=events.slice(0,3).map(e=>`<span class="calendar-event-label ${e.type.toLowerCase()}" title="${esc(e.label)}${e.time?" · "+esc(e.time):""}">${e.type}${e.time?" "+esc(e.time):""}</span>`).join("");
+  const more=events.length>3?`<span class="calendar-more">+${events.length-3} more</span>`:"";
+  cells+=`<button type="button" class="calendar-day ${d.getMonth()!==m?"muted":""} ${events.length?"has-work":""} ${selectedCalendarDate===key?"selected":""} ${todayKey===key?"is-today":""}" onclick="selectCalendarDate('${key}')"><span class="day-number">${d.getDate()}</span>${events.length?`<span class="calendar-day-events">${labels}${more}</span>`:""}</button>`;
+ }
+ root.innerHTML=headHtml+cells;renderCalendarDay();
+}
+function selectCalendarDate(date){selectedCalendarDate=date;const d=new Date(date+"T00:00:00");calendarCursor=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar();}
+function renderCalendarDay(){
+ const rowsForView=calendarBookingsForView();const date=selectedCalendarDate;
+ const events=eventsForCalendarView(rowsForView,date);
+ document.getElementById("calendarDayTitle").textContent="SCHEDULE DETAILS · "+fmtDate(date);
+ document.getElementById("calendarDaySubtitle").textContent="รายการ CY / Closing SI / Closing VGM ของวันที่เลือก พร้อมเวลา Deadline";
+ document.getElementById("calendarDayTotal").textContent=`${events.length} EVENTS`;
+ document.getElementById("calendarDayRows").innerHTML=events.map(e=>{
+  const b=e.booking,ref=b["Booking Ref"]||b["Booking No."]||"";
+  const eventLabel=e.type==="CY"?"CY · Loading":e.type==="SI"?"Closing SI":"Closing VGM";
+  const time=e.time||"—";
+  return `<tr onclick="openDetail('${esc(ref)}')" style="cursor:pointer"><td>${esc(b["Booking No."]||ref||"—")}</td><td>${esc(b["Customer"]||b["Shipper"]||"—")}</td><td><span class="owner-tag">${esc(b["Job Owner"]||b["Owner"]||"ไม่ระบุ")}</span></td><td><span class="calendar-event-type ${e.type.toLowerCase()}">${eventLabel}</span></td><td>${esc(time)}</td><td>${fmtDate(b["ETD"]||b["ETD-LCH"])}</td></tr>`;
+ }).join("")||`<tr><td colspan="6" class="empty">วันนี้ไม่มี CY / Closing SI / Closing VGM</td></tr>`;
+}
+function activityDate(b){const raw=String(b["ETD-LCH"]||b["ETD"]||"").trim();if(/^\\d{4}-\\d{2}-\\d{2}$/.test(raw))return raw;return normalizeBookingDate(raw)||"";}
+function openModal(){document.getElementById("bookingModal").classList.add("show");}function openManualModal(){if(activeOwner==="All"||!teamMembers.includes(activeOwner)){alert("กรุณาคลิกเลือกชื่อเจ้าของงานก่อนเพิ่ม Booking");return;}pendingBookingPDF=null;pendingEditRef=null;document.getElementById("pdfImportNote").style.display="none";document.getElementById("bookingForm").reset();document.getElementById("bookingModalTitle").textContent="เพิ่ม Booking ใหม่";openModal();}function closeModal(){document.getElementById("bookingModal").classList.remove("show");document.getElementById("bookingForm").reset();document.getElementById("bookingModalTitle").textContent="เพิ่ม Booking ใหม่";document.getElementById("pdfImportNote").style.display="none";pendingBookingPDF=null;pendingEditRef=null;}
+
+function normalizeMatchText(value){
+ return String(value||"").toLowerCase().replace(/[^a-z0-9ก-๙]+/g," ").trim().replace(/\s+/g," ");
+}
+function markRelatedTrackerConfirmed(booking){
+ const owner=booking["Job Owner"]||activeOwner||"";
+ const bookingNo=normalizeMatchText(booking["Booking No."]||booking["Booking Ref"]);
+ const shipper=normalizeMatchText(booking["Customer"]||booking["Shipper"]);
+ if(!owner)return 0;
+ let changed=0;
+ trackerRecords.forEach(record=>{
+   if(record.owner!==owner || record.status==="CANCEL" || record.status==="CONFIRM")return;
+   const subjects=normalizeMatchText([record.agent,record.shipper].join(" "));
+   const bookingNoMatch=bookingNo.length>=5 && subjects.includes(bookingNo);
+   const shipperMatch=shipper.length>=5 && (subjects.includes(shipper)||shipper.split(" ").filter(w=>w.length>=4).some(w=>subjects.includes(w)));
+   if(bookingNoMatch||shipperMatch){
+     record.status="CONFIRM";
+     record.confirmedByBooking=booking["Booking No."]||booking["Booking Ref"]||"";
+     record.confirmedAt=new Date().toISOString();
+     changed++;
+   }
+ });
+ if(changed)persistTracker();
+ return changed;
+}
+
+document.getElementById("bookingForm").addEventListener("submit",async e=>{e.preventDefault();const fd=new FormData(e.target);const b={};for(const [k,v] of fd.entries())b[k]=v;
+b["Booking Ref"]=b["Booking No."]||"";b["Job Owner"]=teamMembers.includes(activeOwner)?activeOwner:"";
+b["Shipment Status"]=b["Shipment Status"]||"Booking Pending";b["Shipper"]=b["Customer"]||"";b["Forwarding Agent"]=b["Agent Name"]||"";b["Quantity / Volume"]=b["Volume"]||"";b["Place of Delivery (POD)"]=b["Destination (POD)"]||"";b["ETD-LCH"]=b["ETD"]||"";b["ETA-DEST"]=b["ETA"]||"";b["Closing Date"]=b["Closing Time"]||"";b["Closing VGM Time"]=b["VGM Closing"]||"";b["Paperless Ref."]=b["Paperless Code"]||"";b["Remarks"]=b["Remark"]||"";b["CY Place / Date"]=[b["CY Date"],b["CY Depot / Location"]].filter(Boolean).join(" · ");b["Return Place / Date"]=[b["Return Date"],b["Return Depot / Location"]].filter(Boolean).join(" · ");b["Feeder Voyage"]=b["Voyage"]||"";b["Feeder Name / Voy."]=[b["Feeder Name"],b["Voyage"]].filter(Boolean).join(" / ");b._dataType=pendingBookingPDF?"ข้อมูลจริงจากเอกสาร":"เพิ่มโดยผู้ใช้";if(pendingBookingPDF)b["Shipment Status"]="Booking Confirmed";const editIndex=pendingEditRef?bookings.findIndex(x=>String(x["Booking Ref"]||x["Booking No."])===String(pendingEditRef)):-1;const incomingKeys=[b["Booking No."],b["Booking Ref"]].map(v=>String(v||"").trim().toLowerCase()).filter(Boolean);const duplicateIndex=bookings.findIndex((x,i)=>i!==editIndex&&[x["Booking No."],x["Booking Ref"]].some(v=>incomingKeys.includes(String(v||"").trim().toLowerCase())));if(duplicateIndex>=0){alert("Booking No. นี้มีอยู่แล้ว กรุณาใช้การอัปเดต Shipment เดิมจาก PDF ใหม่");return;}if(editIndex>=0){const oldRef=String(bookings[editIndex]["Booking Ref"]||bookings[editIndex]["Booking No."]);b["Booking Ref"]=oldRef;bookings[editIndex]={...bookings[editIndex],...b};}else{bookings.push(b);}saveData();const autoConfirmedCount=markRelatedTrackerConfirmed(b);try{if(pendingBookingPDF)await saveShipmentFile(b["Booking Ref"],"bookingSeabra",pendingBookingPDF);}catch(err){console.error(err);alert("บันทึกข้อมูลแล้ว แต่เก็บไฟล์ Booking PDF ไม่สำเร็จ กรุณาแนบไฟล์จากรายละเอียด Shipment อีกครั้ง");}const wasEdit=editIndex>=0;pendingBookingPDF=null;pendingEditRef=null;e.target.reset();closeModal();refreshAll();renderTracker();navigate("bookings");if(autoConfirmedCount>0)alert(`เพิ่ม Booking เรียบร้อยแล้ว · ระบบเปลี่ยนสถานะรายการที่ตรงกันเป็น CONFIRM จำนวน ${autoConfirmedCount} รายการ`);if(wasEdit)alert("อัปเดต Shipment เดิมเรียบร้อยแล้ว พร้อมแทนที่ไฟล์ BOOKING SEABRA ด้วย PDF ใหม่");});
+
+
+let selectedDeadlineType = "Closing SI";
+const SHIPMENT_STATUSES = ["Booking Pending","Booking Confirmed","Pending Loading","Loaded","Shipped","Completed"];
+function shipmentStatusClass(status){
+  const s=String(status||"Booking Pending");
+  if(s==="Booking Pending"||s==="Pending Loading")return "pending";
+  if(s==="Loaded")return "loaded";
+  if(s==="Shipped")return "shipped";
+  if(s==="Completed")return "completed";
+  return "";
+}
+function setDeadlineType(type){
+  selectedDeadlineType = type==="VGM Closing" ? "VGM Closing" : "Closing SI";
+  document.getElementById("deadlineTabSI")?.classList.toggle("active",selectedDeadlineType==="Closing SI");
+  document.getElementById("deadlineTabVGM")?.classList.toggle("active",selectedDeadlineType==="VGM Closing");
+  renderOpsPanels();
+}
+function saveShipmentStatus(ref){
+  const b=bookings.find(x=>String(x["Booking Ref"]||x["Booking No."])===String(ref));
+  if(!b)return;
+  b["Shipment Status"]=document.getElementById("shipmentStatusEditor")?.value||"Booking Pending";
+  b["Ops Updated At"]=new Date().toISOString();
+  saveData();
+  renderOpsPanels();renderBookings();renderDashboard();
+  const msg=document.getElementById("shipmentStatusSaveMessage");
+  if(msg)msg.textContent="บันทึกสถานะเรียบร้อยแล้ว";
+}
+function updateShipmentStatus(ref,value){
+  const b=bookings.find(x=>String(x["Booking Ref"]||x["Booking No."])===String(ref));
+  if(!b)return;
+  b["Shipment Status"]=value;b["Ops Updated At"]=new Date().toISOString();
+  saveData();renderOpsPanels();renderBookings();renderDashboard();
+}
+function renderOpsPanels(){
+  const rows=visibleBookings();
+  const deadlineBox=document.getElementById("opsDeadlineList");
+  const statusBox=document.getElementById("opsStatusList");
+  const pendingSummary=document.getElementById("bookingPendingSummary");
+  if(!deadlineBox||!statusBox)return;
+  if(!activeOwner){
+    deadlineBox.innerHTML='<div class="ops-empty">เลือกชื่อเจ้าของงานเพื่อดูรายการกำหนดการ</div>';
+    statusBox.innerHTML='<div class="ops-empty">เลือกชื่อเจ้าของงานเพื่อดูรายการ Booking</div>';
+    if(pendingSummary)pendingSummary.textContent="Booking Pending: 0 รายการ";
+    return;
+  }
+  const tasks=rows.map(b=>{
+    const raw=selectedDeadlineType==="Closing SI"?(b["Closing SI"]||b["Closing Time"]):(b["VGM Closing"]||b["Closing VGM Time"]||b["VGM Closing Date"]);
+    const date=normalizeBookingDate(raw);
+    if(!date)return null;
+    const days=Math.round((new Date(date+"T00:00:00")-today)/86400000);
+    return {ref:b["Booking Ref"]||b["Booking No."]||"",date,days,booking:b};
+  }).filter(t=>t && t.days>=0 && t.days<=3).sort((x,y)=>x.date.localeCompare(y.date));
+  deadlineBox.innerHTML=tasks.map(t=>`<div class="ops-item"><div class="ops-item-main"><strong>${esc(t.booking["Booking No."]||t.ref)}</strong><small>${esc(t.booking["Customer"]||t.booking["Shipper"]||"ไม่ระบุ Shipper")} · ${esc(t.booking["Job Owner"]||activeOwner)}</small></div><span class="ops-date">${t.days<0?`เลยกำหนด ${Math.abs(t.days)} วัน`:t.days===0?"วันนี้":t.days===1?"พรุ่งนี้":`อีก ${t.days} วัน`}<br>${fmtDate(t.date)}</span><button class="btn" style="padding:5px 8px" onclick="openDetail('${esc(t.ref)}')">ดู</button></div>`).join("")||`<div class="ops-empty">ไม่มีกำหนด ${selectedDeadlineType} ภายใน 3 วัน</div>`;
+  const loadingRows=rows.map(b=>{
+    const raw=b["CY Date"]||b["CY Date / Loading Date"]||b["Load Date"]||"";
+    const date=normalizeBookingDate(raw);
+    if(!date)return null;
+    const days=Math.round((new Date(date+"T00:00:00")-today)/86400000);
+    return {booking:b,date,days,ref:b["Booking Ref"]||b["Booking No."]||""};
+  }).filter(x=>x && x.days>=0).sort((x,y)=>x.date.localeCompare(y.date));
+  if(pendingSummary)pendingSummary.textContent=`Upcoming Loading: ${loadingRows.length} รายการ`;
+  statusBox.innerHTML=loadingRows.slice(0,8).map(t=>{
+    const b=t.booking;
+    const dayLabel=t.days===0?"วันนี้":t.days===1?"พรุ่งนี้":`อีก ${t.days} วัน`;
+    return `<div class="ops-item"><div class="ops-item-main"><strong>${esc(b["Booking No."]||t.ref)}</strong><small>${esc(b["Customer"]||b["Shipper"]||"ไม่ระบุ Shipper")} · ${esc(b["Job Owner"]||activeOwner)}</small><span class="status-pill">${esc(dayLabel)} · ${fmtDate(t.date)}</span></div></div>`;
+  }).join("")||'<div class="ops-empty">ยังไม่มี Shipment ที่มีกำหนดโหลดในอนาคต หรือยังไม่ได้ระบุ CY Date</div>';
+}
+
+function openDetail(ref){const b=bookings.find(x=>x["Booking Ref"]===ref);if(!b)return;const keys=['Booking No.', 'Booking Date', 'Job Owner', 'Customer', 'Attention / PIC', 'Agent Name', 'Commodity', 'Volume', 'Carrier', 'Place of Receipt', 'Port of Loading (POL)', 'Destination (POD)', 'Feeder Name', 'Voyage', 'ETD', 'ETA', 'Closing Time', 'CY Date', 'CY Depot / Location', 'Return Date', 'Return Depot / Location', 'VGM Closing', 'Closing SI', 'Paperless Code', 'Remark'];document.getElementById("detailPanel").innerHTML=`<button class="detail-close" onclick="closeDetail()">ปิด ✕</button><button class="btn primary" style="margin-right:8px" onclick="updateShipmentFromPDF('${esc(b["Booking Ref"])}')">อัปเดตจาก PDF ใหม่</button><button class="btn" style="color:#5B0015;margin-right:8px" onclick="deleteBookingByRef(this)" data-ref="${esc(b["Booking Ref"])}">ลบ Booking นี้</button><div class="eyebrow">BOOKING DETAIL</div><h3>${esc(b["Shipper"])}</h3><div class="sub">${esc(b["Booking Ref"])} · ${esc(b._dataType)}</div><div class="detail-grid">${keys.map(k=>`<div class="detail-item"><small>${esc(k)}</small><strong>${esc((b[k]||"—").replace(/\n/g," · "))}</strong></div>`).join("")}</div>
+<div class="panel" style="margin-top:18px;padding:15px">
+  <h3 style="margin:0 0 4px;font-size:14px">Shipment Status</h3>
+  <p class="small-note" style="margin:0">เลือกสถานะปัจจุบันของ Shipment เพื่อให้สมาชิกในทีมตรวจสอบความคืบหน้าได้</p>
+  <div class="handover-editor">
+    <label>Current Status</label>
+    <select id="shipmentStatusEditor">${SHIPMENT_STATUSES.map(s=>`<option value="${s}">${s}</option>`).join("")}</select>
+    <button class="btn primary" onclick="saveShipmentStatus('${esc(b["Booking Ref"])}')">บันทึก Status</button>
+    <div class="small-note" id="shipmentStatusSaveMessage"></div>
+  </div>
+</div>
+<div class="panel" style="margin-top:18px;padding:15px"><h3 style="margin:0 0 6px;font-size:14px">เอกสารของ Shipment</h3><p class="small-note" style="margin:0 0 12px">เก็บไฟล์ย้อนหลังแยกตามประเภทของ Shipment: Booking Seabra, Booking Carrier, HBL และ MBL กดดู PDF ได้ภายหลัง ไฟล์เดิมประเภทเดียวกันจะถูกแทนที่</p><div id="shipmentFiles" style="display:grid;gap:10px"><div class="small-note">กำลังตรวจสอบไฟล์...</div></div></div>`;document.getElementById("detailOverlay").classList.add("show");
+const statusEditor=document.getElementById("shipmentStatusEditor");
+if(statusEditor)statusEditor.value=b["Shipment Status"]||"Booking Pending";
+renderShipmentFiles(b["Booking Ref"]);}
+async function renderShipmentFiles(ref){const box=document.getElementById("shipmentFiles");if(!box)return;const types=[{key:"bookingSeabra",label:"BOOKING SEABRA"},{key:"bookingCarrier",label:"BOOKING CARRIER"},{key:"HBL",label:"HBL"},{key:"MBL",label:"MBL"}];let html="";for(const d of types){let saved=null;try{saved=await getShipmentFile(ref,d.key);if(!saved&&d.key==="bookingSeabra")saved=await getShipmentFile(ref,"bookingPdf");}catch(e){}html+=`<div style="border:1px solid var(--line);border-radius:9px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap"><div><strong style="font-size:12px">${d.label}</strong><div class="small-note" style="margin:3px 0 0">${saved?esc(saved.name):"ยังไม่ได้แนบไฟล์"}</div></div><div style="display:flex;gap:6px;flex-wrap:wrap">${saved?`<button class="btn" onclick="viewShipmentFile('${esc(ref)}','${d.key}')">ดู PDF</button>`:""}<button class="btn" onclick="document.getElementById('file_${d.key}').click()">${saved?"เปลี่ยนไฟล์":"แนบ PDF"}</button><input id="file_${d.key}" type="file" accept="application/pdf,.pdf" hidden onchange="uploadShipmentFile(event,'${esc(ref)}','${d.key}')"></div></div>`;}if(document.getElementById("shipmentFiles"))document.getElementById("shipmentFiles").innerHTML=html;}
+async function uploadShipmentFile(event,ref,type){const file=event.target.files?.[0];if(!file)return;if(file.type!=="application/pdf"&&!file.name.toLowerCase().endsWith(".pdf")){alert("กรุณาเลือกไฟล์ PDF เท่านั้น");event.target.value="";return;}try{await saveShipmentFile(ref,type,file);alert("แนบไฟล์เรียบร้อยแล้ว");await renderShipmentFiles(ref);}catch(err){console.error(err);alert("อัปโหลดไฟล์ขึ้น Cloud ไม่สำเร็จ: "+(err.message||"กรุณาตรวจสอบอินเทอร์เน็ต"));}event.target.value="";}
+let activePdfUrl=null;
+async function viewShipmentFile(ref,type){try{let saved=await getShipmentFile(ref,type,true);if(!saved&&type==="bookingSeabra")saved=await getShipmentFile(ref,"bookingPdf",true);if(!saved){alert("ไม่พบไฟล์ PDF ที่แนบไว้");return;}closePdfViewer();activePdfUrl=URL.createObjectURL(saved.blob);const frame=document.getElementById("pdfFrame");const title=document.getElementById("pdfViewerTitle");const dl=document.getElementById("pdfDownloadLink");title.textContent=(saved.name||type)+" · "+ref;frame.src=activePdfUrl;dl.href=activePdfUrl;dl.download=saved.name||(`${ref}_${type}.pdf`);document.getElementById("pdfViewer").classList.add("show");}catch(e){console.error(e);alert("เปิดไฟล์ไม่สำเร็จ กรุณาลองแนบไฟล์ PDF ใหม่อีกครั้ง");}}
+function closePdfViewer(){const viewer=document.getElementById("pdfViewer");if(viewer)viewer.classList.remove("show");const frame=document.getElementById("pdfFrame");if(frame)frame.src="about:blank";const dl=document.getElementById("pdfDownloadLink");if(dl)dl.removeAttribute("href");if(activePdfUrl){URL.revokeObjectURL(activePdfUrl);activePdfUrl=null;}}
+function closeDetail(){document.getElementById("detailOverlay").classList.remove("show");}
+function openCustomer(name){const rs=recordsForCustomer(name);const dest=mostCommon(rs.map(r=>r["Place of Delivery (POD)"]));alert(`ลูกค้า: ${name}\nBooking ในไฟล์: ${rs.length} รายการ\nปลายทางที่พบบ่อย: ${dest||"ไม่ระบุ"}\n\nหมายเหตุ: ข้อมูลนี้เป็นสรุปจากไฟล์ปัจจุบัน ยังไม่มีประวัติการส่งออกจริงย้อนหลังเพียงพอสำหรับคำนวณรอบ Shipment ครั้งถัดไป`);}
+function exportCSV(){const cols=['Booking No.', 'Booking Date', 'Job Owner', 'Customer', 'Attention / PIC', 'Agent Name', 'Commodity', 'Volume', 'Carrier', 'Place of Receipt', 'Port of Loading (POL)', 'Destination (POD)', 'Feeder Name', 'Voyage', 'ETD', 'ETA', 'Closing Time', 'CY Date', 'CY Depot / Location', 'Return Date', 'Return Depot / Location', 'VGM Closing', 'Closing SI', 'Paperless Code', 'Remark'];const q=(v)=>'"'+String(v??"").replace(/"/g,'""')+'"';const csv="\uFEFF"+[cols.map(q).join(","),...bookings.map(b=>cols.map(k=>q(b[k])).join(","))].join("\r\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));a.download="export_pulse_bookings.csv";a.click();URL.revokeObjectURL(a.href); }
+function parseCSV(text){const rows=[];let row=[],val="",quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(quoted){if(c==='"'&&text[i+1]==='"'){val+='"';i++;}else if(c==='"')quoted=false;else val+=c;}else{if(c==='"')quoted=true;else if(c===","){row.push(val);val="";}else if(c==="\n"){row.push(val.replace(/\r$/,""));rows.push(row);row=[];val="";}else val+=c;}}if(val.length||row.length){row.push(val.replace(/\r$/,""));rows.push(row);}return rows;}
+function normalizeImportedDate(v){if(v===null||v===undefined||v==="")return "";if(typeof v==="number"&&window.XLSX){const d=XLSX.SSF.parse_date_code(v);if(d)return `${d.y}-${String(d.m).padStart(2,"0")}-${String(d.d).padStart(2,"0")}`;}if(v instanceof Date&&!isNaN(v))return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,"0")}-${String(v.getDate()).padStart(2,"0")}`;const str=String(v).trim();if(/^\d{4}-\d{2}-\d{2}/.test(str))return str.slice(0,10);const m=str.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);if(m){let a=Number(m[1]),b=Number(m[2]),y=Number(m[3]);if(y>2400)y-=543;return `${y}-${String(b).padStart(2,"0")}-${String(a).padStart(2,"0")}`;}return str;}
+function importSpreadsheet(event){
+ if(activeOwner==="All"||!teamMembers.includes(activeOwner)){alert("กรุณาคลิกเลือกชื่อเจ้าของงานก่อนนำเข้า Excel/CSV");event.target.value="";return;}
+const file=event.target.files?.[0];if(!file)return;
+const ext=(file.name.split(".").pop()||"").toLowerCase();
+const reader=new FileReader();
+reader.onload=()=>{
+try{
+ let rows;
+ if(ext==="csv"){rows=parseCSV(String(reader.result).replace(/^\uFEFF/,""));}
+ else{
+   if(!window.XLSX)throw new Error("โหลดตัวอ่าน Excel ไม่สำเร็จ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วเปิดไฟล์ใหม่ หรือบันทึกเป็น CSV UTF-8");
+   const wb=XLSX.read(reader.result,{type:"array",cellDates:true});
+   if(!wb.SheetNames.length)throw new Error("ไฟล์ไม่มีชีต");
+   const sheetName=wb.SheetNames.includes("Booking Data")?"Booking Data":wb.SheetNames[0];
+   rows=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,defval:"",raw:true});
+ }
+ if(!rows||!rows.length)throw new Error("ไม่พบข้อมูลในไฟล์");
+ const norm=x=>String(x??"").replace(/\s+/g," ").trim().toLowerCase().replace(/[：:]/g,"");
+ const headerAliases={
+  "booking no.":"Booking No.","booking no":"Booking No.","booking number":"Booking No.",
+  "carrier booking / b/l no.":"Booking No.","carrier booking no.":"Booking No.","carrier booking":"Booking No.",
+  "booking ref":"Booking No.","booking reference":"Booking No.",
+  "booking date":"Booking Date","customer":"Customer","customer / shipper":"Customer","shipper name":"Customer","to / customer":"Customer","shipper":"Customer",
+  "attention / pic":"Attention / PIC","attention":"Attention / PIC","pic":"Attention / PIC","agent name":"Agent Name","forwarder / agent":"Agent Name","forwarding agent":"Agent Name",
+  "commodity":"Commodity","volume":"Volume","container qty / volume":"Volume","quantity / volume":"Volume",
+  "carrier":"Carrier","place of receipt":"Place of Receipt","port of loading (pol)":"Port of Loading (POL)","pol":"Port of Loading (POL)",
+  "destination (pod)":"Destination (POD)","port of discharge (pod)":"Destination (POD)","pod":"Destination (POD)","port of delivery":"Destination (POD)",
+  "feeder name":"Feeder Name","feeder":"Feeder Name","feeder voyage":"Voyage","vessel voyage":"Voyage","voyage":"Voyage",
+  "etd":"ETD","eta":"ETA","closing time":"Closing Time","closing date/time":"Closing Time","container closing date":"Closing Time",
+  "cy date":"CY Date","cy / pickup date":"CY Date","cy depot / location":"CY Depot / Location","pickup place / depot":"CY Depot / Location",
+  "return date":"Return Date","return place / terminal":"Return Depot / Location","return depot / location":"Return Depot / Location",
+  "vgm closing":"VGM Closing","vgm closing date/time":"VGM Closing","closing vgm date":"VGM Closing","closing vgm time":"VGM Closing",
+  "closing si":"Closing SI","doc / si closing date":"Closing SI","closing si date":"Closing SI","si closing time":"Closing SI","closing si time":"Closing SI",
+  "paperless code":"Paperless Code","remark":"Remark","remarks":"Remark","shipper remark":"Remark","customer remark":"Remark","other remark":"Remark"
+ };
+ const expected=new Set(Object.keys(headerAliases));
+ let headerIndex=-1,scoreBest=0;
+ for(let i=0;i<Math.min(rows.length,40);i++){
+   const vals=rows[i].map(norm);const score=vals.reduce((n,v)=>n+(expected.has(v)?1:0),0);
+   if(score>scoreBest){scoreBest=score;headerIndex=i;}
+ }
+ if(headerIndex<0||scoreBest<2)throw new Error("หาแถวหัวตารางไม่พบ กรุณาให้แถวแรกเป็นชื่อคอลัมน์ เช่น Booking No., Customer, ETD, Carrier");
+ const headers=rows[headerIndex].map(x=>String(x??"").trim());
+ const dateFields=new Set(["Booking Date","ETD","ETA","CY Date","Return Date"]);
+ let added=0,updated=0,skipped=0;
+ const getVal=(r,i,dest)=>{for(let j=0;j<headers.length;j++){if(headerAliases[norm(headers[j])]===dest){const v=r[j];if(v!==null&&v!==undefined&&String(v).trim()!=="")return dateFields.has(dest)?normalizeImportedDate(v):String(v).trim();}}return "";};
+ rows.slice(headerIndex+1).forEach(r=>{
+  if(!r.some(x=>String(x??"").trim()))return;
+  const b={};
+  [...new Set(Object.values(headerAliases))].forEach(k=>{const v=getVal(r,0,k);if(v!=="")b[k]=v;});
+  // direct column map supports the current Export Pulse export format as well
+  headers.forEach((h,i)=>{const dest=headerAliases[norm(h)];if(dest){const v=r[i];if(v!==null&&v!==undefined&&String(v).trim()!=="")b[dest]=dateFields.has(dest)?normalizeImportedDate(v):String(v).trim();}});
+  const bookingNo=String(b["Booking No."]||"").trim();
+  if(!bookingNo){skipped++;return;}
+  b["Booking Ref"]=bookingNo;
+  b["Job Owner"]=activeOwner;
+  b["Shipper"]=b["Customer"]||"";
+  b["Forwarding Agent"]=b["Agent Name"]||"";
+  b["Quantity / Volume"]=b["Volume"]||"";
+  b["Place of Delivery (POD)"]=b["Destination (POD)"]||"";
+  b["ETD-LCH"]=b["ETD"]||"";
+  b["ETA-DEST"]=b["ETA"]||"";
+  b["VGM Closing Date"]=b["VGM Closing"]||"";
+  b["Closing SI"]=b["Closing SI"]||"";
+  b["Paperless Ref."]=b["Paperless Code"]||"";
+  b["Remarks"]=b["Remark"]||"";
+  b["Feeder Name / Voy."]=b["Feeder Name"]||"";
+  b["CY Place / Date"]=[b["CY Date"],b["CY Depot / Location"]].filter(Boolean).join(" · ");
+  b["Return Place / Date"]=[b["Return Date"],b["Return Depot / Location"]].filter(Boolean).join(" · ");
+  const ref=bookingNo.toLowerCase();
+  const index=bookings.findIndex(x=>[x["Booking No."],x["Booking Ref"]].some(v=>String(v||"").trim().toLowerCase()===ref));
+  if(index>=0){
+    if(confirm(`พบ Booking No. ${bookingNo} อยู่แล้ว ต้องการอัปเดตข้อมูลเดิมหรือไม่?`)){
+      bookings[index]={...bookings[index],...b,_dataType:"อัปเดตจาก Excel"};
+      updated++;
+    }else skipped++;
+  }else{b._dataType="นำเข้าจาก Excel";bookings.push(b);added++;}
+ });
+ saveData();refreshAll();navigate("bookings");
+ alert(`นำเข้า Excel/CSV เสร็จแล้ว\nเพิ่มใหม่ ${added} รายการ\nอัปเดตเดิม ${updated} รายการ\nข้าม ${skipped} รายการ (ไม่มี Booking No. หรือเลือกไม่อัปเดต)`);
+}catch(e){alert("นำเข้าไฟล์ไม่สำเร็จ: "+(e.message||"กรุณาตรวจสอบไฟล์และชื่อคอลัมน์"));}
+event.target.value="";
+};
+if(ext==="csv")reader.readAsText(file,"UTF-8");else reader.readAsArrayBuffer(file);
+}
+function deleteBookingByRef(button){const ref=String(button?.dataset?.ref||"").trim();if(!ref)return;const norm=v=>String(v??"").trim().toLowerCase();const b=bookings.find(x=>norm(x["Booking Ref"])===norm(ref)||norm(x["Booking No."])===norm(ref)||norm(x["Booking Ref"])===norm((button?.dataset?.bookingNo)||""));if(!b){alert("ไม่พบ Booking นี้ในข้อมูลปัจจุบัน อาจถูกลบไปแล้ว กรุณารีเฟรชหน้า");bookings=loadData();refreshAll();return;}const bookingNo=String(b["Booking No."]||b["Booking Ref"]||ref).trim();if(!confirm(`ยืนยันลบ Booking ${bookingNo} ของ ${b["Shipper"]||b["Customer"]||"ไม่ระบุ Shipper"} ?\nเมื่อลบแล้วจะไม่สามารถกู้คืนจากหน้าเว็บนี้ได้`))return;const keys=new Set([norm(ref),norm(bookingNo),norm(b["Booking Ref"])]);bookings=bookings.filter(x=>!keys.has(norm(x["Booking Ref"]))&&!keys.has(norm(x["Booking No."])));saveData();Promise.all([...keys].filter(Boolean).map(k=>deleteShipmentFiles(k).catch(()=>{})));closeDetail();refreshAll();navigate("bookings");}
+function clearAllData(){
+  const count=bookings.length;
+  if(!confirm(`ต้องการลบข้อมูล Shipment/Booking ${count} รายการทั้งหมดหรือไม่?
+
+จะลบเฉพาะข้อมูลรายการและไฟล์แนบของ Shipment เท่านั้น ไม่ลบหน้าเว็บ กราฟ ฟังก์ชัน หรือส่วนอื่นของระบบ`))return;
+  // Remove only Export Pulse booking datasets from current and legacy storage keys.
+  try{
+    const keys=[];
+    for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k && /^exportPulseBookings/i.test(k))keys.push(k);}
+    keys.forEach(k=>localStorage.removeItem(k));
+    bookings=[];
+    localStorage.setItem(STORAGE_KEY,JSON.stringify([]));
+  }catch(err){
+    bookings=[];
+    try{localStorage.setItem(STORAGE_KEY,"[]");}catch(e){}
+    console.error("Unable to fully clear stored bookings",err);
+  }
+  saveData();
+  clearAllShipmentFiles().catch(err=>console.warn("Could not clear shipment attachments",err));
+  closeDetail();closeModal();refreshAll();navigate("bookings");
+  alert("ลบข้อมูล Booking/Shipment ทั้งหมดแล้วค่ะ ระบบยังอยู่ครบ สามารถนำเข้า Excel/CSV ชุดใหม่ได้เลย");
+}
+function refreshAll(){renderOpsPanels();renderDashboard();renderBookings();renderCalendar();}
+document.getElementById("todayChip").textContent="◷ "+today.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+</script>
+<script src="cloud.js"></script>
+</body>
+</html>
