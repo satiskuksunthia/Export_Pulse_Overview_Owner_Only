@@ -3,5 +3,5 @@
 // ห้ามใส่ service_role key ในไฟล์นี้เด็ดขาด
 window.EXPORT_PULSE_CONFIG = {
   SUPABASE_URL: "https://YOUR-PROJECT.supabase.co",
-  SUPABASE_ANON_KEY: "YOUR-ANON-KEY",
+  SUPABASE_ANON_KEY: "sb_publishable_ICvUKm4pLL09bEK-cBA80Q_IVsy8V1d",
 };
